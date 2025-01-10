@@ -22,7 +22,6 @@ The directory structure of the project looks like this:
 │   └── source/
 │       └── index.md
 ├── models/                   # Trained models
-├── notebooks/                # Jupyter notebooks
 ├── reports/                  # Reports
 │   └── figures/
 ├── src/                      # Source code
