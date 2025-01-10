@@ -2,6 +2,16 @@
 
 A refactor of a previously implemented EHR for MLOps course @ DTU
 
+## Project Description
+
+### Goal
+
+### Framework
+
+### Data
+
+### Models
+
 ## Project structure
 
 The directory structure of the project looks like this:
