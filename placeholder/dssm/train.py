@@ -12,7 +12,7 @@ from torch import nn
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader, Dataset
 
-from models.dssm import DSSM
+from placeholder.dssm.dssm import DSSM
 
 
 class PhysionetDataset(Dataset):
