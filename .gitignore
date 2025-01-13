@@ -1,5 +1,10 @@
 docs/site/
 
+# Don't include data files in the repo
+placeholder/
+data/physion_data
+
+requirements.txt
 # test cache
 manual_test/
 
