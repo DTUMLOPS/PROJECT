@@ -31,14 +31,14 @@ def dev_requirements(ctx: Context) -> None:
 
 # Project commands
 @task
-def preprocess_data(ctx: Context) -> None:
-    """Preprocess data."""
-    ctx.run(f"python src/{PROJECT_NAME}/data.py data/raw data/processed", echo=True, pty=not WINDOWS)
-
-@task
 def train(ctx: Context) -> None:
     """Train model."""
     ctx.run(f"python src/{PROJECT_NAME}/train.py", echo=True, pty=not WINDOWS)
+
+@task
+def evaluate(ctx: Context) -> None:
+    """Train model."""
+    ctx.run(f"python src/{PROJECT_NAME}/evaluate.py", echo=True, pty=not WINDOWS)
 
 @task
 def test(ctx: Context) -> None:
@@ -59,15 +59,3 @@ def docker_build(ctx: Context, progress: str = "plain") -> None:
         echo=True,
         pty=not WINDOWS
     )
-
-# Documentation commands
-@task(dev_requirements)
-def build_docs(ctx: Context) -> None:
-    """Build documentation."""
-    ctx.run("mkdocs build --config-file docs/mkdocs.yaml --site-dir build", echo=True, pty=not WINDOWS)
-
-
-@task(dev_requirements)
-def serve_docs(ctx: Context) -> None:
-    """Serve documentation."""
-    ctx.run("mkdocs serve --config-file docs/mkdocs.yaml", echo=True, pty=not WINDOWS)

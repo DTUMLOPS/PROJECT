@@ -2,8 +2,15 @@ defaults:
   - _self_
   - model: dssm
 
+hydra:
+  run:
+    dir: ${paths.output_dir}/train_runs/${now:%Y-%m-%d}_${now:%H-%M-%S}_split${data.splits}_bs${training.batch_size}
+  sweep:
+    dir: ${paths.output_dir}/train_multirun/${now:%Y-%m-%d}_${now:%H-%M-%S}
+    subdir: run_${hydra.job.num}_split${data.splits}_bs${training.batch_size}
+
 paths:
-  root_dir: ${hydra:runtime.cwd}/../../  # Go up two directories from configs/ to reach project root
+  root_dir: ${hydra:runtime.cwd}
   data_dir: ${paths.root_dir}/data/processed
   model_dir: ${paths.root_dir}/models
   output_dir: ${paths.root_dir}/outputs
@@ -20,10 +27,3 @@ training:
   use_gpu: false
   checkpoint_dir: ${paths.model_dir}
   patience: 10
-
-hydra:
-  run:
-    dir: ${paths.output_dir}/${now:%Y-%m-%d}/${now:%H-%M-%S}
-  sweep:
-    dir: ${paths.output_dir}/multirun/${now:%Y-%m-%d}/${now:%H-%M-%S}
-    subdir: ${hydra.job.num}

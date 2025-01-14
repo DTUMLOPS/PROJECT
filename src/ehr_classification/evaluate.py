@@ -9,8 +9,8 @@ import hydra
 from omegaconf import DictConfig, OmegaConf
 import pytorch_lightning as pl
 
-from src.ehr_classification.data import PhysionetDataModule
-from src.ehr_classification.model import DSSMLightning
+from ehr_classification.data import PhysionetDataModule
+from ehr_classification.model import DSSMLightning
 
 logger = logging.getLogger(__name__)
 
