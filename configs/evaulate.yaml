@@ -1,6 +1,0 @@
-defaults:
-  - _self_
-  - model: dssm
-
-evaluation:
-  checkpoint_path: ${paths.output_dir}/models/best_model.ckpt
