@@ -7,7 +7,11 @@ name = "ehr_classification"
 version = "0.0.1"
 description = "A refactor of a previously implemented EHR for MLOps course @ DTU"
 authors = [
-  { name = "group 30", email = "your@email.com" },
+  { name = "Jakub Jędraszka", email = "s232946@dtu.dk" },
+  { name = "Barbara Kośka", email = "s@dtu.dk" },
+  { name = "Giulia Andretta", email = "s@dtu.dk" },
+  { name = "Alexandre Comas", email = "s@dtu.dk" },
+  { name = "Axel Sorensen", email = "s@dtu.dk" },
 ]
 license = { file = "LICENSE" }
 keywords = ["machine learning", "MLOps"]

@@ -1,8 +1,8 @@
 docs/site/
 
-# Don't include data files in the repo
+# Don't include uzipped data files in the repo
 placeholder/
-data/physion_data
+split_*/
 
 requirements.txt
 # test cache

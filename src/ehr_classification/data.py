@@ -1,36 +1,85 @@
+import logging
 from pathlib import Path
-import pdb
-import typer
-from torch.utils.data import Dataset
 import numpy as np
+import torch
+from torch.utils.data import Dataset, DataLoader
+from torch.nn.utils.rnn import pad_sequence
+import pytorch_lightning as pl
 
-# Define the path to the data directory
-DATA_PATH = "../../data/physion_data"
+logger = logging.getLogger(__name__)
 
-def load_data(data_path: Path, splits: list[int]) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Load the dataset by combining data from multiple splits."""
-    train_data = np.array([])
-    val_data = np.array([])
-    test_data = np.array([])
-    
-    # Iterate over each split and load the corresponding data
-    for split in splits:
-        train_data_split, val_data_split, test_data_split = load_split_data(split, base_path=data_path)
-        
-        # Concatenate the data from the current split with the previously loaded data
-        train_data = np.concatenate([train_data, train_data_split])
-        val_data = np.concatenate([val_data, val_data_split])
-        test_data = np.concatenate([test_data, test_data_split])
-    
-    return train_data, val_data, test_data
 
-def load_split_data(split_number, base_path='P12data'):
-    """Load data for a specific split."""
-    split_path = f'{base_path}/split_{split_number}'
+class PhysionetDataset(Dataset):
+    def __init__(self, data):
+        self.data = data
 
-    # Load the training, validation, and test data for the given split
-    train_data = np.load(f'{split_path}/train_physionet2012_{split_number}.npy', allow_pickle=True)
-    val_data = np.load(f'{split_path}/validation_physionet2012_{split_number}.npy', allow_pickle=True)
-    test_data = np.load(f'{split_path}/test_physionet2012_{split_number}.npy', allow_pickle=True)
-    
-    return train_data, val_data, test_data
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        record = self.data[idx]
+        return (
+            torch.tensor(record['ts_values'], dtype=torch.float32),
+            torch.tensor(record['static'], dtype=torch.float32),
+            torch.tensor(record['labels'], dtype=torch.long),
+            len(record['ts_times'])
+        )
+
+
+class PhysionetDataModule(pl.LightningDataModule):
+    def __init__(self, data_dir: str, split_number: int = 1, batch_size: int = 32):
+        super().__init__()
+        self.data_dir = Path(data_dir)
+        self.split_number = split_number
+        self.batch_size = batch_size
+        self.train_data = None
+        self.val_data = None
+        self.test_data = None
+
+    def setup(self, stage=None):
+        """Load data from processed directory"""
+        split_dir = self.data_dir / f"split_{self.split_number}"
+
+        if stage == 'fit' or stage is None:
+            self.train_data = np.load(split_dir / f"train_physionet2012_{self.split_number}.npy",
+                                      allow_pickle=True)
+            self.val_data = np.load(split_dir / f"validation_physionet2012_{self.split_number}.npy",
+                                    allow_pickle=True)
+
+        if stage == 'test' or stage is None:
+            self.test_data = np.load(split_dir / f"test_physionet2012_{self.split_number}.npy",
+                                     allow_pickle=True)
+
+    def train_dataloader(self):
+        return DataLoader(
+            PhysionetDataset(self.train_data),
+            batch_size=self.batch_size,
+            shuffle=True,
+            collate_fn=self.__collate_fn
+        )
+
+    def val_dataloader(self):
+        return DataLoader(
+            PhysionetDataset(self.val_data),
+            batch_size=self.batch_size,
+            shuffle=False,
+            collate_fn=self.__collate_fn
+        )
+
+    def test_dataloader(self):
+        return DataLoader(
+            PhysionetDataset(self.test_data),
+            batch_size=self.batch_size,
+            shuffle=False,
+            collate_fn=self.__collate_fn
+        )
+
+    @staticmethod
+    def __collate_fn(batch):
+        ts_values, static, labels, lengths = zip(*batch)
+        lengths = torch.tensor(lengths)
+        ts_values_padded = pad_sequence(ts_values, batch_first=True)
+        static = torch.stack(static)
+        labels = torch.stack(labels)
+
+        return ts_values_padded, static, labels, lengths
