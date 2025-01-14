@@ -10,7 +10,7 @@ paths:
 
 data:
   base_dir: ${paths.data_dir}
-  splits: null  # If null, uses all splits (1-5). Can specify list like [1, 2, 3]
+  splits: [1]  # If null, uses all splits (1-5). Can specify list like [1, 2, 3]
 
 training:
   max_epochs: 100

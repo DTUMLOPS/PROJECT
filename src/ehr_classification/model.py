@@ -72,8 +72,8 @@ class DSSMLightning(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         loss, probs, preds, labels = self._shared_step(batch, batch_idx)
         self.train_accuracy(preds, labels)
-        self.log('train_loss', loss)
-        self.log('train_acc', self.train_accuracy, on_step=True, on_epoch=True)
+        self.log('train_loss', loss, prog_bar=True)
+        self.log('train_acc', self.train_accuracy, on_step=True, on_epoch=True, prog_bar=True)
         return loss
 
     def validation_step(self, batch, batch_idx):

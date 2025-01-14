@@ -12,8 +12,11 @@ from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
 from src.ehr_classification.data import PhysionetDataModule
 from src.ehr_classification.model import DSSMLightning
 
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO
+)
 logger = logging.getLogger(__name__)
-
 
 def train_single_split(cfg: DictConfig, split_number: int) -> dict:
     """Train model on a single data split."""
@@ -82,7 +85,7 @@ def aggregate_metrics(all_results: list) -> dict:
     return metrics_dict
 
 
-@hydra.main(config_path="../../configs", config_name="train")
+@hydra.main(config_path="../../configs", config_name="train", version_base="1.1")
 def train(cfg: DictConfig) -> None:
     """Train the model with cross-validation."""
     logger.info("Starting cross-validation training...")

@@ -12,7 +12,7 @@ from src.ehr_classification.model import DSSMLightning
 logger = logging.getLogger(__name__)
 
 
-@hydra.main(config_path="../../configs", config_name="evaluate")
+@hydra.main(config_path="../../configs", config_name="evaluate", version_base="1.1")
 def evaluate(cfg: DictConfig) -> None:
     """Evaluate a trained model with given configuration."""
     logger.info("Starting evaluation...")
