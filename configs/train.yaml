@@ -1,0 +1,29 @@
+defaults:
+  - _self_
+  - model: dssm
+
+paths:
+  root_dir: ${hydra:runtime.cwd}/../../  # Go up two directories from configs/ to reach project root
+  data_dir: ${paths.root_dir}/data/processed
+  model_dir: ${paths.root_dir}/models
+  output_dir: ${paths.root_dir}/outputs
+
+data:
+  base_dir: ${paths.data_dir}
+  splits: null  # If null, uses all splits (1-5). Can specify list like [1, 2, 3]
+
+training:
+  max_epochs: 100
+  batch_size: 64
+  learning_rate: 0.0001
+  class_weights: [1.0, 7.143]
+  use_gpu: false
+  checkpoint_dir: ${paths.model_dir}
+  patience: 10
+
+hydra:
+  run:
+    dir: ${paths.output_dir}/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  sweep:
+    dir: ${paths.output_dir}/multirun/${now:%Y-%m-%d}/${now:%H-%M-%S}
+    subdir: ${hydra.job.num}
