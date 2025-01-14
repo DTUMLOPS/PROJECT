@@ -12,10 +12,6 @@ from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
 from src.ehr_classification.data import PhysionetDataModule
 from src.ehr_classification.model import DSSMLightning
 
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
-)
 logger = logging.getLogger(__name__)
 
 def train_single_split(cfg: DictConfig, split_number: int) -> dict:
@@ -105,12 +101,10 @@ def train(cfg: DictConfig) -> None:
         split_results = train_single_split(cfg, split_number)
         all_results.append(split_results)
 
-        # Log results for this split
         logger.info(f"\nResults for split {split_number}:")
         for metric, value in split_results.items():
             logger.info(f"{metric}: {value:.4f}")
 
-    # Calculate and log aggregate metrics
     aggregate_results = aggregate_metrics(all_results)
 
     logger.info("\nFinal Cross-Validation Results:")
