@@ -90,9 +90,23 @@ class DSSMLightning(pl.LightningModule):
 
     def test_step(self, batch, batch_idx):
         loss, probs, preds, labels = self._shared_step(batch, batch_idx)
+
         self.test_accuracy(preds, labels)
-        self.log('test_acc', self.test_accuracy)
-        return loss
+        self.auroc(probs[:, 1], labels)
+        self.auprc(probs[:, 1], labels)
+
+        # Log all metrics
+        self.log('test_loss', loss, on_step=False, on_epoch=True)
+        self.log('test_acc', self.test_accuracy, on_step=False, on_epoch=True)
+        self.log('test_auroc', self.auroc, on_step=False, on_epoch=True)
+        self.log('test_auprc', self.auprc, on_step=False, on_epoch=True)
+
+        return {
+            'test_loss': loss,
+            'test_acc': self.test_accuracy,
+            'test_auroc': self.auroc,
+            'test_auprc': self.auprc
+        }
 
 
 class TemporalEncoder(nn.Module):

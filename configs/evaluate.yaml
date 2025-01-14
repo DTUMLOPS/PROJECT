@@ -1,0 +1,21 @@
+defaults:
+  - _self_
+  - model: dssm
+
+paths:
+  root_dir: ${hydra:runtime.cwd}/../../
+  data_dir: ${paths.root_dir}/data/processed
+  model_dir: ${paths.root_dir}/models
+  output_dir: ${paths.root_dir}/outputs
+
+data:
+  base_dir: ${paths.data_dir}
+  split_number: 1
+
+training:
+  batch_size: 64
+  use_gpu: false
+
+evaluation:
+  checkpoint_path: null  # Set to null to use mode-based selection
+  mode: random  # Options: 'random', 'best', 'last'

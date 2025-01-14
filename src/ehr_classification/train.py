@@ -68,15 +68,47 @@ def train_single_split(cfg: DictConfig, split_number: int) -> dict:
     return test_results[0]
 
 
-def aggregate_metrics(all_results: list) -> dict:
-    """Calculate mean and std of metrics across splits."""
-    metrics_dict = {}
-    metric_names = all_results[0].keys()
+def print_results(results: dict, split_number: int = None):
+    """Print formatted results with all metrics."""
+    if split_number is not None:
+        logger.info(f"\nResults for split {split_number}:")
+        logger.info("=" * 50)
+    else:
+        logger.info("\nFinal Results:")
+        logger.info("=" * 50)
 
+    # Format each metric
+    metrics = [
+        ("Loss", "test_loss"),
+        ("Accuracy", "test_acc"),
+        ("AUROC", "test_auroc"),
+        ("AUPRC", "test_auprc")
+    ]
+
+    # Calculate padding for alignment
+    max_name_length = max(len(name) for name, _ in metrics)
+
+    for name, key in metrics:
+        if key in results:
+            value = results[key]
+            logger.info(f"{name:<{max_name_length}}: {value:.4f}")
+
+
+def aggregate_metrics(all_results: list) -> dict:
+    """Calculate mean and std of all metrics across splits."""
+    metrics_dict = {}
+
+    # Get all unique metric names
+    metric_names = set()
+    for result in all_results:
+        metric_names.update(result.keys())
+
+    # Calculate statistics for each metric
     for metric in metric_names:
-        values = [result[metric] for result in all_results]
-        metrics_dict[f'mean_{metric}'] = float(np.mean(values))
-        metrics_dict[f'std_{metric}'] = float(np.std(values))
+        values = [result[metric] for result in all_results if metric in result]
+        if values:
+            metrics_dict[f'mean_{metric}'] = float(np.mean(values))
+            metrics_dict[f'std_{metric}'] = float(np.std(values))
 
     return metrics_dict
 
@@ -101,20 +133,22 @@ def train(cfg: DictConfig) -> None:
         split_results = train_single_split(cfg, split_number)
         all_results.append(split_results)
 
-        logger.info(f"\nResults for split {split_number}:")
-        for metric, value in split_results.items():
-            logger.info(f"{metric}: {value:.4f}")
+    for split_number, split_results in enumerate(all_results, 1):
+        print_results(split_results, split_number)
 
     aggregate_results = aggregate_metrics(all_results)
 
     logger.info("\nFinal Cross-Validation Results:")
     logger.info("Mean ± Std:")
-    for metric in aggregate_results:
-        if metric.startswith('mean_'):
-            base_metric = metric[5:]  # Remove 'mean_' prefix
-            mean_value = aggregate_results[metric]
-            std_value = aggregate_results[f'std_{base_metric}']
-            logger.info(f"{base_metric}: {mean_value:.4f} ± {std_value:.4f}")
+    logger.info("-" * 50)
+
+    # Print all metrics with their statistics
+    metrics = ["test_loss", "test_acc", "test_auroc", "test_auprc"]
+    for metric in metrics:
+        if f"mean_{metric}" in aggregate_results:
+            mean_value = aggregate_results[f"mean_{metric}"]
+            std_value = aggregate_results[f"std_{metric}"]
+            logger.info(f"{metric:15s}: {mean_value:.4f} ± {std_value:.4f}")
 
     logger.info("Training completed!")
 
