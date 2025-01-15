@@ -1,17 +1,26 @@
 import torch
 import torch.nn as nn
+import pytorch_lightning as pl
+import torchmetrics
 
 """
 PyTorch Lightning implementation of the DSSM model.
 """
-import pytorch_lightning as pl
-import torchmetrics
 
 
 class DSSMLightning(pl.LightningModule):
-    def __init__(self, input_size, hidden_size, static_input_size, num_classes,
-                 num_layers=2, dropout_rate=0.2, bidirectional=True,
-                 learning_rate=0.001, class_weights=None):
+    def __init__(
+        self,
+        input_size,
+        hidden_size,
+        static_input_size,
+        num_classes,
+        num_layers=2,
+        dropout_rate=0.2,
+        bidirectional=True,
+        learning_rate=0.001,
+        class_weights=None,
+    ):
         super().__init__()
         self.save_hyperparameters()
 
@@ -22,26 +31,18 @@ class DSSMLightning(pl.LightningModule):
         self.learning_rate = learning_rate
 
         # Model components
-        self.temporal_encoder = TemporalEncoder(
-            input_size, hidden_size, num_layers, dropout_rate, bidirectional
-        )
-        self.static_encoder = StaticEncoder(
-            static_input_size, hidden_size, dropout_rate
-        )
-        self.state_transition = StateTransition(
-            hidden_size * self.num_directions, dropout_rate
-        )
-        self.classifier = Classifier(
-            hidden_size * (self.num_directions + 1), hidden_size, num_classes, dropout_rate
-        )
+        self.temporal_encoder = TemporalEncoder(input_size, hidden_size, num_layers, dropout_rate, bidirectional)
+        self.static_encoder = StaticEncoder(static_input_size, hidden_size, dropout_rate)
+        self.state_transition = StateTransition(hidden_size * self.num_directions, dropout_rate)
+        self.classifier = Classifier(hidden_size * (self.num_directions + 1), hidden_size, num_classes, dropout_rate)
 
         # Loss and metrics
         self.criterion = nn.CrossEntropyLoss(weight=torch.tensor(class_weights) if class_weights else None)
-        self.train_accuracy = torchmetrics.Accuracy(task='binary', num_classes=2)
-        self.val_accuracy = torchmetrics.Accuracy(task='binary', num_classes=2)
-        self.test_accuracy = torchmetrics.Accuracy(task='binary', num_classes=2)
-        self.auroc = torchmetrics.AUROC(task='binary', num_classes=2)
-        self.auprc = torchmetrics.AveragePrecision(task='binary', num_classes=2)
+        self.train_accuracy = torchmetrics.Accuracy(task="binary", num_classes=2)
+        self.val_accuracy = torchmetrics.Accuracy(task="binary", num_classes=2)
+        self.test_accuracy = torchmetrics.Accuracy(task="binary", num_classes=2)
+        self.auroc = torchmetrics.AUROC(task="binary", num_classes=2)
+        self.auprc = torchmetrics.AveragePrecision(task="binary", num_classes=2)
 
     def forward(self, temporal_data, static_data, seq_lengths):
         batch_size = temporal_data.size(0)
@@ -70,8 +71,8 @@ class DSSMLightning(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         loss, probs, preds, labels = self._shared_step(batch, batch_idx)
         self.train_accuracy(preds, labels)
-        self.log('train_loss', loss, prog_bar=True)
-        self.log('train_acc', self.train_accuracy, on_step=True, on_epoch=True, prog_bar=True)
+        self.log("train_loss", loss, prog_bar=True)
+        self.log("train_acc", self.train_accuracy, on_step=True, on_epoch=True, prog_bar=True)
         return loss
 
     def validation_step(self, batch, batch_idx):
@@ -80,10 +81,10 @@ class DSSMLightning(pl.LightningModule):
         self.auroc(probs[:, 1], labels)  # AUROC expects probabilities of positive class
         self.auprc(probs[:, 1], labels)  # AUPRC expects probabilities of positive class
 
-        self.log('val_loss', loss)
-        self.log('val_acc', self.val_accuracy, on_epoch=True)
-        self.log('val_auroc', self.auroc, on_epoch=True)
-        self.log('val_auprc', self.auprc, on_epoch=True)
+        self.log("val_loss", loss)
+        self.log("val_acc", self.val_accuracy, on_epoch=True)
+        self.log("val_auroc", self.auroc, on_epoch=True)
+        self.log("val_auprc", self.auprc, on_epoch=True)
         return loss
 
     def test_step(self, batch, batch_idx):
@@ -94,17 +95,12 @@ class DSSMLightning(pl.LightningModule):
         self.auprc(probs[:, 1], labels)
 
         # Log all metrics
-        self.log('test_loss', loss, on_step=False, on_epoch=True)
-        self.log('test_acc', self.test_accuracy, on_step=False, on_epoch=True)
-        self.log('test_auroc', self.auroc, on_step=False, on_epoch=True)
-        self.log('test_auprc', self.auprc, on_step=False, on_epoch=True)
+        self.log("test_loss", loss, on_step=False, on_epoch=True)
+        self.log("test_acc", self.test_accuracy, on_step=False, on_epoch=True)
+        self.log("test_auroc", self.auroc, on_step=False, on_epoch=True)
+        self.log("test_auprc", self.auprc, on_step=False, on_epoch=True)
 
-        return {
-            'test_loss': loss,
-            'test_acc': self.test_accuracy,
-            'test_auroc': self.auroc,
-            'test_auprc': self.auprc
-        }
+        return {"test_loss": loss, "test_acc": self.test_accuracy, "test_auroc": self.auroc, "test_auprc": self.auprc}
 
 
 class TemporalEncoder(nn.Module):
@@ -117,13 +113,11 @@ class TemporalEncoder(nn.Module):
             num_layers=num_layers,
             batch_first=True,
             bidirectional=bidirectional,
-            dropout=dropout_rate if num_layers > 1 else 0
+            dropout=dropout_rate if num_layers > 1 else 0,
         )
 
         self.attention = nn.MultiheadAttention(
-            embed_dim=hidden_size * (2 if bidirectional else 1),
-            num_heads=4,
-            dropout=dropout_rate
+            embed_dim=hidden_size * (2 if bidirectional else 1), num_heads=4, dropout=dropout_rate
         )
 
     def forward(self, temporal_data, seq_lengths):
@@ -137,8 +131,9 @@ class TemporalEncoder(nn.Module):
         lstm_output, _ = nn.utils.rnn.pad_packed_sequence(packed_output, batch_first=True)
 
         # Apply attention
-        attention_mask = (torch.arange(lstm_output.size(1))[None, :].to(lstm_output.device)
-                          >= seq_lengths[:, None].to(lstm_output.device))
+        attention_mask = torch.arange(lstm_output.size(1))[None, :].to(lstm_output.device) >= seq_lengths[:, None].to(
+            lstm_output.device
+        )
         attention_output = self._apply_attention(lstm_output, attention_mask)
 
         return attention_output
@@ -162,10 +157,7 @@ class StaticEncoder(nn.Module):
         super(StaticEncoder, self).__init__()
 
         self.network = nn.Sequential(
-            nn.Linear(input_size, hidden_size),
-            nn.ReLU(),
-            nn.Dropout(dropout_rate),
-            nn.Linear(hidden_size, hidden_size)
+            nn.Linear(input_size, hidden_size), nn.ReLU(), nn.Dropout(dropout_rate), nn.Linear(hidden_size, hidden_size)
         )
 
     def forward(self, static_data):
@@ -176,11 +168,7 @@ class StateTransition(nn.Module):
     def __init__(self, hidden_size, dropout_rate):
         super(StateTransition, self).__init__()
 
-        self.network = nn.Sequential(
-            nn.Linear(hidden_size, hidden_size),
-            nn.Tanh(),
-            nn.Dropout(dropout_rate)
-        )
+        self.network = nn.Sequential(nn.Linear(hidden_size, hidden_size), nn.Tanh(), nn.Dropout(dropout_rate))
 
     def forward(self, x):
         return self.network(x)
@@ -194,7 +182,7 @@ class Classifier(nn.Module):
             nn.Linear(input_size, hidden_size * 2),
             nn.ReLU(),
             nn.Dropout(dropout_rate),
-            nn.Linear(hidden_size * 2, num_classes)
+            nn.Linear(hidden_size * 2, num_classes),
         )
 
     def forward(self, x):

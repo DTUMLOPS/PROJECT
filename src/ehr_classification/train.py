@@ -14,6 +14,7 @@ from ehr_classification.model import DSSMLightning
 
 logger = logging.getLogger(__name__)
 
+
 def train_single_split(cfg: DictConfig, split_number: int) -> dict:
     """Train model on a single data split."""
     logger.info(f"Training on split {split_number}")
@@ -24,46 +25,38 @@ def train_single_split(cfg: DictConfig, split_number: int) -> dict:
 
     # Create data module for this split
     datamodule = PhysionetDataModule(
-        data_dir=cfg.data.base_dir,
-        split_number=split_number,
-        batch_size=cfg.training.batch_size
+        data_dir=cfg.data.base_dir, split_number=split_number, batch_size=cfg.training.batch_size
     )
 
     # Initialize model
     model = DSSMLightning(
-        **cfg.model,
-        learning_rate=cfg.training.learning_rate,
-        class_weights=cfg.training.class_weights
+        **cfg.model, learning_rate=cfg.training.learning_rate, class_weights=cfg.training.class_weights
     )
 
     # Setup callbacks
     callbacks = [
         ModelCheckpoint(
             dirpath=split_checkpoint_dir,
-            filename=f'split_{split_number}-{{epoch}}-{{val_loss:.2f}}',
-            monitor='val_loss',
+            filename=f"split_{split_number}-{{epoch}}-{{val_loss:.2f}}",
+            monitor="val_loss",
             save_top_k=3,
-            mode='min'
+            mode="min",
         ),
-        EarlyStopping(
-            monitor='val_loss',
-            patience=cfg.training.patience,
-            mode='min'
-        )
+        EarlyStopping(monitor="val_loss", patience=cfg.training.patience, mode="min"),
     ]
 
     # Initialize trainer
     trainer = pl.Trainer(
         max_epochs=cfg.training.max_epochs,
-        accelerator='gpu' if cfg.training.use_gpu else 'cpu',
+        accelerator="gpu" if cfg.training.use_gpu else "cpu",
         devices=1,
         callbacks=callbacks,
-        deterministic=True
+        deterministic=True,
     )
 
     # Train and test
     trainer.fit(model, datamodule)
-    test_results = trainer.test(model, datamodule=datamodule, ckpt_path='best')
+    test_results = trainer.test(model, datamodule=datamodule, ckpt_path="best")
 
     return test_results[0]
 
@@ -78,12 +71,7 @@ def print_results(results: dict, split_number: int = None):
         logger.info("=" * 50)
 
     # Format each metric
-    metrics = [
-        ("Loss", "test_loss"),
-        ("Accuracy", "test_acc"),
-        ("AUROC", "test_auroc"),
-        ("AUPRC", "test_auprc")
-    ]
+    metrics = [("Loss", "test_loss"), ("Accuracy", "test_acc"), ("AUROC", "test_auroc"), ("AUPRC", "test_auprc")]
 
     # Calculate padding for alignment
     max_name_length = max(len(name) for name, _ in metrics)
@@ -107,8 +95,8 @@ def aggregate_metrics(all_results: list) -> dict:
     for metric in metric_names:
         values = [result[metric] for result in all_results if metric in result]
         if values:
-            metrics_dict[f'mean_{metric}'] = float(np.mean(values))
-            metrics_dict[f'std_{metric}'] = float(np.std(values))
+            metrics_dict[f"mean_{metric}"] = float(np.mean(values))
+            metrics_dict[f"std_{metric}"] = float(np.std(values))
 
     return metrics_dict
 
