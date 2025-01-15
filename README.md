@@ -40,7 +40,7 @@ The directory structure of the project looks like this:
 ├── README.md                 # Project README
 ├── requirements.txt          # Project requirements
 ├── requirements_dev.txt      # Development requirements
-└── tasks.py                  # Project tasks - 
+└── tasks.py                  # Project tasks -
 ```
 
 ## Setup environment and install requirements
@@ -56,6 +56,7 @@ invoke dev-requirements
 ```
 # Just run invoke requirements again
 invoke requirements
+invoke dev-requirements
 ```
 
 
