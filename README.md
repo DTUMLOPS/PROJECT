@@ -39,7 +39,7 @@ The core model will be based on Deep State Space Models (SSM), particularly suit
   - Continuous training.
   - Iterative improvements.
 
-  
+
 A refactor of a previously implemented EHR for MLOps course @ DTU
 
 ## Project structure
