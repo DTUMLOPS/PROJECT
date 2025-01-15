@@ -41,11 +41,21 @@ The directory structure of the project looks like this:
 ├── requirements.txt          # Project requirements
 ├── requirements_dev.txt      # Development requirements
 └── tasks.py                  # Project tasks - 
-                                    1. from (base) conda evniroment we run: pip install -r requirements_dev.txt -> 
-                                    2. invoke create_environment ->
-                                    3. conta activate ehr_classification ->
-                                    4. pip install -r requirements_dev.txt
-                                    5. invoke requirements
+```
+
+## Setup environment and install requirements
+```
+pip install invoke
+invoke create-environment
+conda activate ehr_classification
+invoke requirements
+invoke dev-requirements
+```
+
+## If requirements.txt changes
+```
+# Just run invoke requirements again
+invoke requirements
 ```
 
 
