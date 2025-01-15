@@ -1,5 +1,5 @@
-torch~=2.5.1
-numpy==2.2.1
+torch~=2.2.2
+numpy<2
 pytorch-lightning~=2.5.0.post0
 invoke~=2.2.0
 torchmetrics~=1.6.1
