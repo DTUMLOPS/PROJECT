@@ -18,7 +18,7 @@ def test_len(dataset):
 
 def test_first_item_ts_values_shape(dataset):
     ts_values, _, _, _ = dataset[0]
-    assert ts_values.shape == (3, 37)  # 3 timestamps, 37 features each
+    assert ts_values.shape == (3, 37)  # 3 timestamps, 37 features each 
 
 def test_first_item_static_shape(dataset):
     _, static, _, _ = dataset[0]
