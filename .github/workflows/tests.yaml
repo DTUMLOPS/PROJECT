@@ -14,11 +14,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ['3.12']
-        pytorch-version: ['2.0.0', '2.1.0', '2.2.0']
-#        exclude:
-#          # Exclude older PyTorch version on Windows due to potential compatibility issues
-#          - os: windows-latest
-#            pytorch-version: '2.0.0'
+        pytorch-version: ['2.2.0', '2.2.1', '2.2.2']
 
     steps:
       - uses: actions/checkout@v4
