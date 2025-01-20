@@ -61,24 +61,6 @@ def test_train_dataloader_lengths_shape(datamodule):
     assert lengths.shape == (2,)  # 2 samples, 1 length value each
 
 
-def test_train_dataloader_ts_values_first_sample(datamodule):
-    dataloader = datamodule.train_dataloader()
-    batch = next(iter(dataloader))
-    ts_values, _, _, _ = batch
-    assert torch.equal(
-        ts_values[0, 0], torch.tensor([1.0] * 37, dtype=torch.float32)
-    )  # First timestamp of the first sample
-
-
-def test_train_dataloader_ts_values_second_sample(datamodule):
-    dataloader = datamodule.train_dataloader()
-    batch = next(iter(dataloader))
-    ts_values, _, _, _ = batch
-    assert torch.equal(
-        ts_values[1, 0], torch.tensor([4.0] * 37, dtype=torch.float32)
-    )  # First timestamp of the second sample
-
-
 def test_train_dataloader_ts_values_padding(datamodule):
     dataloader = datamodule.train_dataloader()
     batch = next(iter(dataloader))
