@@ -46,6 +46,12 @@ def evaluate(ctx: Context) -> None:
 
 
 @task
+def infer(ctx: Context) -> None:
+    """Run model inference."""
+    ctx.run(f"python src/{PROJECT_NAME}/inference.py", echo=True, pty=not WINDOWS)
+
+
+@task
 def test(ctx: Context) -> None:
     """Run tests."""
     ctx.run("coverage run -m pytest tests/", echo=True, pty=not WINDOWS)
