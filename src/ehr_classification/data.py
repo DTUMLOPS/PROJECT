@@ -66,7 +66,7 @@ class PhysionetDataModule(pl.LightningDataModule):
     def __collate_fn(batch):
         ts_values, static, labels, lengths = zip(*batch)
         lengths = torch.tensor(lengths)
-        ts_values_padded = pad_sequence(ts_values, batch_first=True)
+        ts_values_padded = pad_sequence(ts_values, batch_first=True, padding_value=0.0)
         static = torch.stack(static)
         labels = torch.stack(labels)
 

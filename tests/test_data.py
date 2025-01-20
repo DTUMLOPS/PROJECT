@@ -14,7 +14,7 @@ def mock_data():
     ]
 
 
-@pytest.fixture
+@pytest.fixture(scope="function", autouse=True)
 def datamodule(mock_data):
     datamodule = PhysionetDataModule(data_dir="/tmp", split_number=1, batch_size=2)
     datamodule.train_data = mock_data
@@ -64,9 +64,14 @@ def test_train_dataloader_lengths_shape(datamodule):
 def test_train_dataloader_ts_values_padding(datamodule):
     dataloader = datamodule.train_dataloader()
     batch = next(iter(dataloader))
-    ts_values, _, _, _ = batch
-    # Check if padding has been applied: second sample should have 2 timestamps, padded to 3
-    assert torch.equal(ts_values[1, 2], torch.tensor([0.0] * 37, dtype=torch.float32))  # Padding should be all zeros
+    ts_values, _, _, lengths = batch
+
+    # Check the actual sequence lengths match expected
+    assert lengths[0] == 3  # First sequence has 3 timestamps
+    assert lengths[1] == 2  # Second sequence has 2 timestamps
+
+    # Check padding of second sequence
+    assert torch.equal(ts_values[1, 2], torch.zeros(37, dtype=torch.float32))
 
 
 @pytest.fixture
