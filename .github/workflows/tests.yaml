@@ -30,34 +30,12 @@ jobs:
         run: |
           coverage run -m pytest tests/
           coverage report -m
+          coverage html --show-contexts --title "Coverage Report for EHR Classification"
 
-#  test:
-#    runs-on: ${{ matrix.operating-system }}
-#    strategy:
-#      matrix:
-#        operating-system: ["ubuntu-latest", "windows-latest", "macos-latest"]
-#        python-version: ["3.12", "3.11"]
-#
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v4
-#
-#      - name: Set up Python
-#        uses: actions/setup-python@v5
-#        with:
-#          python-version: ${{ matrix.python-version }}
-#          cache: 'pip'
-#          cache-dependency-path: setup.py
-#
-#      - name: Install dependencies
-#        run: |
-#          python -m pip install -U pip setuptools wheel
-#          pip install -r requirements.txt
-#          pip install -r requirements_dev.txt
-#          pip list
-#
-#
-#      - name: Run tests & coverage
-#        run: |
-#          coverage run -m pytest tests/
-#          coverage report -m
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 14
