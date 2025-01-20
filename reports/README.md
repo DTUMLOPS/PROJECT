@@ -1,50 +1,4 @@
 # Exam template for 02476 Machine Learning Operations
-
-# Mortality Prediction Model for ICU Patients
-
-## Overall Goal of the Project
-
-This project aims to develop a mortality prediction model for ICU patients using a Deep State Space Model (SSM) approach. Leveraging the PhysioNet/Computing in Cardiology (CinC) Challenge 2012 dataset, which includes time-series data from 12,000 ICU patients, the project emphasizes the implementation of MLOps practices. We are bulding on top of a previous project that focused on the training of models with a focus on accuracy, while this project instead focuses on practices to ensure reproducibility, version control, and collaborative scalability, critical for advancing machine learning applications in healthcare.
-
-## Frameworks and Tools
-
-- **PyTorch**: Used to build and train the model due to its flexibility and low-level control, allowing detailed customization of architecture and training pipelines.
-
-- **Scikit-learn**: Supports model evaluation by providing standardized metrics such as AUROC and accuracy.
-
-- **MLOps Tools**: Enables automated pipeline management, experiment tracking, and continuous integration (CI). These workflows ensure:
-  - Robust versioning of datasets and models.
-  - Reproducibility of experiments.
-  - Smooth collaboration across teams.
-
-
-## Data
-
-The PhysioNet/CinC Challenge 2012 dataset provides rich time-series data collected during the first 48 hours of ICU admission for 12,000 patients. This dataset includes:
-
-- **Physiological Measurements**: Heart rate, blood pressure, oxygen saturation, etc.
-- **Demographic Descriptors**: Age, gender, etc.
-- **Outcome-related Information**: Mortality indicators.
-
-This real-world dataset is ideal for developing and testing the proposed model. It is publicly accessible at **[PhysioNet CinC Challenge 2012 Dataset](https://physionet.org/content/challenge-2012/1.0.0/)**.
-
-
-## Model Architecture
-
-The core model will be based on Deep State Space Models (SSM), particularly suited for capturing temporal dynamics in time-series data. Key features of the architecture include:
-
-- **Integration of LSTM Networks**: Effective modeling of long-term dependencies in time-series data.
-- **Balance of Predictive Performance and Interpretability**: Ensuring the model is both accurate and understandable.
-- **MLOps Integration**: Seamless workflows for:
-  - Efficient deployment.
-  - Continuous training.
-  - Iterative improvements.
-
-
-## Conclusion
-
-By applying MLOps principles throughout, this project aims to demonstrate how modern workflows enhance the development, reproducibility, and scalability of machine learning models in healthcare.
-
 This is the report template for the exam. Please only remove the text formatted as with three dashes in front and behind
 like:
 
@@ -93,41 +47,41 @@ will check the repositories and the code to verify your answers.
 
 ### Week 1
 
-* [ ] Create a git repository (M5)
-* [ ] Make sure that all team members have write access to the GitHub repository (M5)
-* [ ] Create a dedicated environment for you project to keep track of your packages (M2)
-* [ ] Create the initial file structure using cookiecutter with an appropriate template (M6)
-* [ ] Fill out the `data.py` file such that it downloads whatever data you need and preprocesses it (if necessary) (M6)
-* [ ] Add a model to `model.py` and a training procedure to `train.py` and get that running (M6)
-* [ ] Remember to fill out the `requirements.txt` and `requirements_dev.txt` file with whatever dependencies that you
+* [x] Create a git repository (M5)
+* [x] Make sure that all team members have write access to the GitHub repository (M5)
+* [x] Create a dedicated environment for you project to keep track of your packages (M2)
+* [x] Create the initial file structure using cookiecutter with an appropriate template (M6)
+* [x] Fill out the `data.py` file such that it downloads whatever data you need and preprocesses it (if necessary) (M6)
+* [x] Add a model to `model.py` and a training procedure to `train.py` and get that running (M6)
+* [x] Remember to fill out the `requirements.txt` and `requirements_dev.txt` file with whatever dependencies that you
     are using (M2+M6)
-* [ ] Remember to comply with good coding practices (`pep8`) while doing the project (M7)
-* [ ] Do a bit of code typing and remember to document essential parts of your code (M7)
-* [ ] Setup version control for your data or part of your data (M8)
-* [ ] Add command line interfaces and project commands to your code where it makes sense (M9)
-* [ ] Construct one or multiple docker files for your code (M10)
-* [ ] Build the docker files locally and make sure they work as intended (M10)
-* [ ] Write one or multiple configurations files for your experiments (M11)
-* [ ] Used Hydra to load the configurations and manage your hyperparameters (M11)
+* [x] Remember to comply with good coding practices (`pep8`) while doing the project (M7)
+* [x] Do a bit of code typing and remember to document essential parts of your code (M7)
+* [x] Setup version control for your data or part of your data (M8)
+* [x] Add command line interfaces and project commands to your code where it makes sense (M9)
+* [x] Construct one or multiple docker files for your code (M10)
+* [x] Build the docker files locally and make sure they work as intended (M10)
+* [x] Write one or multiple configurations files for your experiments (M11)
+* [x] Used Hydra to load the configurations and manage your hyperparameters (M11)
 * [ ] Use profiling to optimize your code (M12)
-* [ ] Use logging to log important events in your code (M14)
+* [x] Use logging to log important events in your code (M14)
 * [ ] Use Weights & Biases to log training progress and other important metrics/artifacts in your code (M14)
 * [ ] Consider running a hyperparameter optimization sweep (M14)
-* [ ] Use PyTorch-lightning (if applicable) to reduce the amount of boilerplate in your code (M15)
+* [x] Use PyTorch-lightning (if applicable) to reduce the amount of boilerplate in your code (M15)
 
 ### Week 2
 
-* [ ] Write unit tests related to the data part of your code (M16)
-* [ ] Write unit tests related to model construction and or model training (M16)
-* [ ] Calculate the code coverage (M16)
-* [ ] Get some continuous integration running on the GitHub repository (M17)
-* [ ] Add caching and multi-os/python/pytorch testing to your continuous integration (M17)
-* [ ] Add a linting step to your continuous integration (M17)
-* [ ] Add pre-commit hooks to your version control setup (M18)
+* [x] Write unit tests related to the data part of your code (M16)
+* [x] Write unit tests related to model construction and or model training (M16)
+* [x] Calculate the code coverage (M16)
+* [x] Get some continuous integration running on the GitHub repository (M17)
+* [x] Add caching and multi-os/python/pytorch testing to your continuous integration (M17)
+* [x] Add a linting step to your continuous integration (M17)
+* [x] Add pre-commit hooks to your version control setup (M18)
 * [ ] Add a continues workflow that triggers when data changes (M19)
 * [ ] Add a continues workflow that triggers when changes to the model registry is made (M19)
-* [ ] Create a data storage in GCP Bucket for your data and link this with your data version control setup (M21)
-* [ ] Create a trigger workflow for automatically building your docker images (M21)
+* [x] Create a data storage in GCP Bucket for your data and link this with your data version control setup (M21)
+* [x] Create a trigger workflow for automatically building your docker images (M21)
 * [ ] Get your model training in GCP using either the Engine or Vertex AI (M21)
 * [ ] Create a FastAPI application that can do inference using your model (M22)
 * [ ] Deploy your model in GCP using either Functions or Run as the backend (M23)
@@ -163,7 +117,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 1 fill here ---
+*30*
 
 ### Question 2
 > **Enter the study number for each member in the group**
@@ -174,7 +128,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 2 fill here ---
+*s232946, s233500 ,s234065 ,s233128, s233148*
 
 ### Question 3
 > **A requirement to the project is that you include a third-party package not covered in the course. What framework**
