@@ -37,5 +37,5 @@ jobs:
         if: always()
         with:
           name: coverage-report
-          path: coverage/
+          path: htmlcov/
           retention-days: 14
