@@ -13,15 +13,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ['3.12']  # Note the array syntax
-        pytorch-version: ['2.2.0']  # Note the array syntax
-        upload-coverage: [false]  # Default value for all combinations
-        include:
-          # Override for macos to enable coverage upload
-          - os: macos-latest
-            python-version: '3.12'
-            pytorch-version: '2.2.0'
-            upload-coverage: true
+        python-version: ['3.12']
+        pytorch-version: ['2.2.0']
 
     steps:
       - uses: actions/checkout@v4
@@ -51,7 +44,7 @@ jobs:
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
-        if: ${{ matrix.upload-coverage == true }}
+        if: ${{ matrix.os == 'macos-latest' }}
         with:
           name: coverage-report
           path: htmlcov/
