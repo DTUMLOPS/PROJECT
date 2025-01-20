@@ -13,14 +13,15 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: '3.12'
-        pytorch-version: '2.2.0'
-      include:
-        # Latest stable combination for coverage reporting
-        - os: macos-latest
-          python-version: '3.12'
-          pytorch-version: '2.2.0'
-          upload-coverage: true
+        python-version: ['3.12']  # Note the array syntax
+        pytorch-version: ['2.2.0']  # Note the array syntax
+        upload-coverage: [false]  # Default value for all combinations
+        include:
+          # Override for macos to enable coverage upload
+          - os: macos-latest
+            python-version: '3.12'
+            pytorch-version: '2.2.0'
+            upload-coverage: true
 
     steps:
       - uses: actions/checkout@v4
