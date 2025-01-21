@@ -71,6 +71,11 @@ def docker_build(ctx: Context, progress: str = "plain") -> None:
         echo=True,
         pty=not WINDOWS,
     )
+    ctx.run(
+        f"docker build -t infer_ehr:latest . -f dockerfiles/inference.dockerfile --progress={progress}",
+        echo=True,
+        pty=not WINDOWS,
+    )
 
 
 @task(docker_build)
@@ -83,3 +88,9 @@ def docker_train(ctx: Context) -> None:
 def docker_evaluate(ctx: Context) -> None:
     """Run evaluation in Docker container."""
     ctx.run("docker run --rm evaluate_ehr:latest", echo=True, pty=not WINDOWS)
+
+
+@task(docker_build)
+def docker_infer(ctx: Context) -> None:
+    """Run inference in Docker container."""
+    ctx.run("docker run --rm infer_ehr:latest", echo=True, pty=not WINDOWS)
