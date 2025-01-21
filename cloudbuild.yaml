@@ -1,0 +1,63 @@
+steps:
+# Build training image
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Build training image'
+  args: [
+    'build',
+    '.',
+    '-t',
+    'europe-west1-docker.pkg.dev/$PROJECT_ID/group-30-container-registry/train-ehr',
+    '-f',
+    'dockerfiles/train.dockerfile'
+  ]
+
+# Push training image
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Push training image'
+  args: [
+    'push',
+    'europe-west1-docker.pkg.dev/$PROJECT_ID/group-30-container-registry/train-ehr'
+  ]
+
+# Build evaluation image
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Build evaluation image'
+  args: [
+    'build',
+    '.',
+    '-t',
+    'europe-west1-docker.pkg.dev/$PROJECT_ID/group-30-container-registry/evaluate-ehr',
+    '-f',
+    'dockerfiles/evaluate.dockerfile'
+  ]
+
+# Push evaluation image
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Push evaluation image'
+  args: [
+    'push',
+    'europe-west1-docker.pkg.dev/$PROJECT_ID/group-30-container-registry/evaluate-ehr'
+  ]
+
+# Build inference image
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Build inference image'
+  args: [
+    'build',
+    '.',
+    '-t',
+    'europe-west1-docker.pkg.dev/$PROJECT_ID/group-30-container-registry/infer-ehr',
+    '-f',
+    'dockerfiles/infer.dockerfile'
+  ]
+
+# Push inference image
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Push inference image'
+  args: [
+    'push',
+    'europe-west1-docker.pkg.dev/$PROJECT_ID/group-30-container-registry/infer-ehr'
+  ]
+
+options:
+  logging: CLOUD_LOGGING_ONLY

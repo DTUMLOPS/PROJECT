@@ -16,3 +16,4 @@ jobs:
         run: |
           docker build -t train:latest . -f dockerfiles/train.dockerfile
           docker build -t evaluate:latest . -f dockerfiles/evaluate.dockerfile
+          docker build -t infer:latest . -f dockerfiles/infer.dockerfile
