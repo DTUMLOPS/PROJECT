@@ -446,7 +446,11 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 23 fill here ---
+We built an API for our model using FastAPI. The API initializes the model during startup using the lifespan function. This setup includes finding the best model checkpoint with the find_checkpoint utility and loading it into memory using our InferenceEngine.
+
+The main feature of the API is the /predict endpoint. While the current implementation uses random data as input, it’s designed to accept real temporal and static data in JSON format. The inputs are validated using Pydantic models, which also define the structure of the output. The endpoint returns predicted probabilities, predicted classes, and an interpretation of the results.
+
+FastAPI makes the API easy to use, and it generates automatic documentation for testing. We also added error handling to catch issues like the model not being loaded or invalid inputs, ensuring the API is reliable and user-friendly. This setup allows for easy extension and deployment.
 
 ### Question 24
 
