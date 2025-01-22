@@ -677,9 +677,9 @@ One of the first difficulties we ran into was with managing dependencies. One te
 
 > Answer:
 
-> *Student s232946 served as a facilitator keeping everyone on the same page and delegating tasks as well as building big parts of the fundamental system. Worked hard to get the API running on the cloud despite many issues. Created and adminstered docker files and artifact registry.
-> *Student s233500 specifically worked on unit tests for the data module and creating the base model + training procedure*
-> *Student s233128 worked mainly on linting, ensuring pep-8 compliance and implementing typing in original code. Also contributed to documentation throughout the project*
-> *Student s234065 was the main person responsible the unit testing of the models, ensuring that they rain correctly and had correct input output dimensions etc. Also implemented the Fast Api code for calling the model through get requests.
-> *Student s233148 mainly worked on monitoring and measuring the experiments carried out using weights and biases as well as setting up the entire dvc pipeline to pull the data from google cloud. Was in charge of training the model through the cloud.
-> All members contributed to having a combined overview of the project as it grew and ensuring correct version control
+Student s232946 served as a facilitator keeping everyone on the same page and delegating tasks as well as building big parts of the fundamental system. Worked hard to get the API running on the cloud despite many issues. Created and adminstered docker files and artifact registry.
+Student s233500 specifically worked on unit tests for the data module and creating the base model + training procedure*
+Student s233128 worked mainly on linting, ensuring pep-8 compliance and implementing typing in original code. Also contributed to documentation throughout the project*
+Student s234065 was the main person responsible the unit testing of the models, ensuring that they rain correctly and had correct input output dimensions etc. Also implemented the Fast Api code for calling the model through get requests.
+Student s233148 mainly worked on monitoring and measuring the experiments carried out using weights and biases as well as setting up the entire dvc pipeline to pull the data from google cloud. Was in charge of training the model through the cloud.
+All members contributed to having a combined overview of the project as it grew and ensuring correct version control
