@@ -82,9 +82,9 @@ will check the repositories and the code to verify your answers.
 * [ ] Add a continues workflow that triggers when changes to the model registry is made (M19)
 * [x] Create a data storage in GCP Bucket for your data and link this with your data version control setup (M21)
 * [x] Create a trigger workflow for automatically building your docker images (M21)
-* [ ] Get your model training in GCP using either the Engine or Vertex AI (M21)
-* [ ] Create a FastAPI application that can do inference using your model (M22)
-* [ ] Deploy your model in GCP using either Functions or Run as the backend (M23)
+* [x] Get your model training in GCP using either the Engine or Vertex AI (M21)
+* [x] Create a FastAPI application that can do inference using your model (M22)
+* [x] Deploy your model in GCP using either Functions or Run as the backend (M23)
 * [ ] Write API tests for your application and setup continues integration for these (M24)
 * [ ] Load test your application (M24)
 * [ ] Create a more specialized ML-deployment API using either ONNX or BentoML, or both (M25)
@@ -389,9 +389,16 @@ In this image we can see various metrics recorded during our training. As we can
 >
 > Answer:
 
-We applied Docker on the various activities, like training, evaluation, and inference tasks. It gives consistency and reproducibility of any given project with regard to a variety of different environments. It includes train.dockerfile, evaluate.dockerfile, infer.dockerfile where each one depends upon and configured its requirement; Dockerfiles automatically give a built-in option with environment discrepancy consideration while creating separate containers for different activities.
+We applied Docker on the various activities, like training, evaluation, and inference tasks. It gives consistency and reproducibility of any given project with regard to a variety of different environments.
+Our project uses Docker to containerize four main services: training, evaluation, inference, and API deployment. Each service is defined as a target in a multi-stage Dockerfile, sharing a common base image with core dependencies.
 
-TO run: docker build -t project_name -f train.dockerfile . This ensures that the required directories (data, models, configs) are mounted correctly into the container, and the task runs as expected.
+[Docker hub repo](https://hub.docker.com/repository/docker/kubekj/flops/general)
+```
+# Inference can be run (with having proper gcp auth set)
+docker compose run --rm infer
+```
+
+The compose file mounts key directories (./data, ./models, ./src) and sets environment variables for each service. Our cloud build pipeline also automatically builds and pushes these images to a container registry for deployment.
 
 ### Question 16
 
@@ -449,7 +456,7 @@ We used the following services:
 >
 > Answer:
 
-We used the compute engine to run our training for the model. We used instances with the following hardware: 
+We used the compute engine to run our training for the model. We used instances with the following hardware:
 e2-medium (2 vCPU, 1 core, 4 GB memory). It worked, but due to the low specs of this VM we ended up training with a member's PC .We are aware that there's GPU accelerated VMs as well, but the costs were too high and threatened to spend all the credits very quickly.
 
 ### Question 19
@@ -459,7 +466,7 @@ e2-medium (2 vCPU, 1 core, 4 GB memory). It worked, but due to the low specs of 
 >
 > Answer:
 
-![alt text](image.png)
+![alt text](figures/data_bucket_3.png)
 
 ### Question 20
 
@@ -494,7 +501,7 @@ e2-medium (2 vCPU, 1 core, 4 GB memory). It worked, but due to the low specs of 
 >
 > Answer:
 
-We managed to train the model in the cloud, but, as explained in question 18, due to the low specs of this VM we ended up training with a member's PC .We are aware that there's GPU accelerated VMs as well, but the costs were too high and threatened to spend all the credits very quickly. 
+We managed to train the model in the cloud, but, as explained in question 18, due to the low specs of this VM we ended up training with a member's PC .We are aware that there's GPU accelerated VMs as well, but the costs were too high and threatened to spend all the credits very quickly.
 
 We managed to do it by simply logging into the VM via SSH and using it as we would for any other PC.
 

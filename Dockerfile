@@ -21,7 +21,6 @@ RUN pip install -r requirements.txt --no-cache-dir
 COPY pyproject.toml ./
 COPY src/ src/
 COPY configs/ configs/
-COPY data/ data/
 
 # Install the package
 RUN pip install . --no-deps --no-cache-dir
@@ -29,7 +28,6 @@ RUN pip install . --no-deps --no-cache-dir
 
 # API stage
 FROM base AS api
-RUN mkdir -p /root/.cache/wandb
 EXPOSE 8080
 ENTRYPOINT ["uvicorn", "ehr_classification.api:app", "--host", "0.0.0.0", "--port", "8080"]
 
@@ -39,10 +37,8 @@ ENTRYPOINT ["python", "-u", "src/ehr_classification/train.py"]
 
 # Evaluation stage
 FROM base AS evaluate
-COPY models/ models/
 ENTRYPOINT ["python", "-u", "src/ehr_classification/evaluate.py"]
 
 # Inference stage
 FROM base AS infer
-COPY models/ models/
 ENTRYPOINT ["python", "-u", "src/ehr_classification/inference.py"]

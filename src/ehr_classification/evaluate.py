@@ -67,10 +67,7 @@ def evaluate(cfg: DictConfig) -> None:
     logger.info("-" * 40)
     logger.info(OmegaConf.to_yaml(cfg))
 
-    # Initialize wandb
     wandb.init(project="dtumlops", entity="alexcomas", job_type="evaluation")
-
-    # Login to wandb
     wandb.login(key=get_wandb_token())
 
     # Use the artifact API to download the file
@@ -93,7 +90,6 @@ def evaluate(cfg: DictConfig) -> None:
         logger.error(f"Error setting up evaluation: {e}")
         return
 
-    # Initialize Trainer
     trainer = pl.Trainer(accelerator="gpu" if cfg.training.use_gpu else "cpu", devices=1, deterministic=True)
 
     # Perform evaluation

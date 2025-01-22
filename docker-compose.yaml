@@ -9,7 +9,6 @@ services:
     volumes:
       - ./src:/src  # For hot reload
     environment:
-      - MODEL_PATH=/models
       - PYTHONUNBUFFERED=1
       - WANDB_API_KEY=${WANDB_API_KEY}
 
@@ -22,8 +21,7 @@ services:
       - ./data:/data
       - ./models:/models
     environment:
-      - MODEL_PATH=/models
-      - DATA_PATH=/data
+      - WANDB_API_KEY=${WANDB_API_KEY}
 
   evaluate:
     build:
@@ -34,8 +32,6 @@ services:
       - ./data:/data
       - ./models:/models
     environment:
-      - MODEL_PATH=/models
-      - DATA_PATH=/data
       - WANDB_API_KEY=${WANDB_API_KEY}
 
   infer:
@@ -47,6 +43,4 @@ services:
       - ./data:/data
       - ./models:/models
     environment:
-      - MODEL_PATH=/models
-      - DATA_PATH=/data
       - WANDB_API_KEY=${WANDB_API_KEY}
