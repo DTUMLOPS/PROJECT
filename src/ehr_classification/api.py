@@ -15,7 +15,6 @@ from pydantic import BaseModel
 import wandb
 
 from ehr_classification.inference import InferenceEngine
-from ehr_classification.utils.secret_manager import get_wandb_token
 
 logger = logging.getLogger(__name__)
 
@@ -30,12 +29,30 @@ class PredictionOutput(BaseModel):
 engine: Optional[InferenceEngine] = None
 
 
+def get_wandb_token() -> str:
+    """Get Wandb token from environment or secret manager."""
+    try:
+        from ehr_classification.utils.secret_manager import get_wandb_token as get_cloud_token
+
+        return get_cloud_token()
+    except Exception as e:
+        logger.error(f"Could not get Wandb token from secret manager: {e}")
+        raise ValueError("Could not get token from secret manager")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global engine
     try:
         # Initialize wandb
         wandb.login(key=get_wandb_token())
+
+        # Initialize wandb run
+        wandb.init(
+            project="dtumlops",
+            entity="alexcomas",
+            job_type="api-inference",
+        )
 
         # Use the artifact API to download the latest model
         artifact = wandb.use_artifact("ehr_classification:latest", type="model")
@@ -54,6 +71,8 @@ async def lifespan(app: FastAPI):
     # Cleanup
     if engine:
         engine.model_manager.unload_model()
+    # Finish wandb run
+    wandb.finish()
 
 
 app = FastAPI(title="EHR Classification API", lifespan=lifespan)
