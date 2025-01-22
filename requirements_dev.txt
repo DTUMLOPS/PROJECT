@@ -16,5 +16,11 @@ mkdocs==1.5.3
 mkdocs-material==9.4.6
 mkdocstrings-python==1.12.2
 
+# dvc
+dvc-gs==3.0.1
+
+# gcloud
+google-api-python-client==2.159.0
+
 # type checking
 mypy>=1.8.0

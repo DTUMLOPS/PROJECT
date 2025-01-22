@@ -1,8 +1,6 @@
 """
-data.py
-
 This file provides data handling functionalities for the machine learning pipeline.
-It includes a custom PyTorch Dataset for handling time-series data and a PyTorch Lightning 
+It includes a custom PyTorch Dataset for handling time-series data and a PyTorch Lightning
 DataModule for streamlined data loading and management across training, validation, and testing phases.
 """
 
@@ -77,7 +75,7 @@ class PhysionetDataModule(pl.LightningDataModule):
         self.test_data = None
 
     def setup(self, stage=None):
-        """ Load data from processed directory based on the stage (train/val/test). """
+        """Load data from processed directory based on the stage (train/val/test)."""
         split_dir = self.data_dir / f"split_{self.split_number}"
 
         if stage == "fit" or stage is None:
@@ -88,30 +86,21 @@ class PhysionetDataModule(pl.LightningDataModule):
             self.test_data = np.load(split_dir / f"test_physionet2012_{self.split_number}.npy", allow_pickle=True)
 
     def train_dataloader(self) -> DataLoader:
-        """Return the DataLoader for the training data."""        
+        """Return the DataLoader for the training data."""
         return DataLoader(
-            PhysionetDataset(self.train_data), 
-            batch_size=self.batch_size, 
-            shuffle=True, 
-            collate_fn=self.__collate_fn
+            PhysionetDataset(self.train_data), batch_size=self.batch_size, shuffle=True, collate_fn=self.__collate_fn
         )
 
-    def val_dataloader(self)-> DataLoader:
+    def val_dataloader(self) -> DataLoader:
         """Return the DataLoader for the validation data."""
         return DataLoader(
-            PhysionetDataset(self.val_data), 
-            batch_size=self.batch_size, 
-            shuffle=False, 
-            collate_fn=self.__collate_fn
+            PhysionetDataset(self.val_data), batch_size=self.batch_size, shuffle=False, collate_fn=self.__collate_fn
         )
 
-    def test_dataloader(self)-> DataLoader:
+    def test_dataloader(self) -> DataLoader:
         """Return the DataLoader for the test data."""
         return DataLoader(
-            PhysionetDataset(self.test_data), 
-            batch_size=self.batch_size, 
-            shuffle=False, 
-            collate_fn=self.__collate_fn
+            PhysionetDataset(self.test_data), batch_size=self.batch_size, shuffle=False, collate_fn=self.__collate_fn
         )
 
     @staticmethod
