@@ -371,7 +371,10 @@ We used config files for reproducibility and to avoid losing information during 
 >
 > Answer:
 
---- question 14 fill here ---
+![alt text](figures/wandb.png)
+
+In this image we can see various metrics recorded during our training. As we can see, we focus more on the validation metrics, since there we can really see the model evolution. In this particular project, we value differently the true positives and true negatives, so we include metrics as AUROC and AUPRC, besides the usual metrics like loss and accuracy.
+
 
 ### Question 15
 
@@ -426,8 +429,12 @@ Although we didn’t profile the code, these strategies allowed us to efficientl
 > *We used the following two services: Engine and Bucket. Engine is used for... and Bucket is used for...*
 >
 > Answer:
+We used the following services:
+- Google Cloud Storage (GCS) to store and manage datasets and model files securely in the appropiate bucket.
+- Compute Engine provides virtual machines (VMs) to host and run our application workloads. It is used for deploying and running models, performing batch processing, and serving inference.
+- Artifact Registry to store and manage container images and other build artifacts. It helps streamline deployment workflows by hosting Docker images for our machine learning models and applications.
+- Secret Manager to store and manage sensitive information, such as the Weigths and Biases API key.
 
-Google Cloud Storage (GCS): For storing and managing datasets and model files securely.
 
 ### Question 18
 
@@ -442,7 +449,8 @@ Google Cloud Storage (GCS): For storing and managing datasets and model files se
 >
 > Answer:
 
---- question 18 fill here ---
+We used the compute engine to run our training for the model. We used instances with the following hardware: 
+e2-medium (2 vCPU, 1 core, 4 GB memory). It worked, but due to the low specs of this VM we ended up training with a member's PC .We are aware that there's GPU accelerated VMs as well, but the costs were too high and threatened to spend all the credits very quickly.
 
 ### Question 19
 
@@ -451,9 +459,7 @@ Google Cloud Storage (GCS): For storing and managing datasets and model files se
 >
 > Answer:
 
-![this figure](figures/data_bucket.png)
-![this figure](figures/data_bucket_2.png)
-
+![alt text](image.png)
 
 ### Question 20
 
@@ -488,7 +494,10 @@ Google Cloud Storage (GCS): For storing and managing datasets and model files se
 >
 > Answer:
 
---- question 22 fill here ---
+We managed to train the model in the cloud, but, as explained in question 18, due to the low specs of this VM we ended up training with a member's PC .We are aware that there's GPU accelerated VMs as well, but the costs were too high and threatened to spend all the credits very quickly. 
+
+We managed to do it by simply logging into the VM via SSH and using it as we would for any other PC.
+
 
 ## Deployment
 
