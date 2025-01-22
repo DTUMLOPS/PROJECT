@@ -459,7 +459,7 @@ e2-medium (2 vCPU, 1 core, 4 GB memory). It worked, but due to the low specs of 
 >
 > Answer:
 
---- question 19 fill here ---
+![alt text](image.png)
 
 ### Question 20
 
@@ -492,7 +492,10 @@ e2-medium (2 vCPU, 1 core, 4 GB memory). It worked, but due to the low specs of 
 >
 > Answer:
 
---- question 22 fill here ---
+We managed to train the model in the cloud, but, as explained in question 18, due to the low specs of this VM we ended up training with a member's PC .We are aware that there's GPU accelerated VMs as well, but the costs were too high and threatened to spend all the credits very quickly. 
+
+We managed to do it by simply logging into the VM via SSH and using it as we would for any other PC.
+
 
 ## Deployment
 
