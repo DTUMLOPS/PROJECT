@@ -1,5 +1,5 @@
 steps:
-# Build training image
+# Build and push all images using target flags
 - name: 'gcr.io/cloud-builders/docker'
   id: 'Build training image'
   args: [
@@ -8,10 +8,11 @@ steps:
     '-t',
     'europe-west1-docker.pkg.dev/$PROJECT_ID/group-30-container-registry/train-ehr',
     '-f',
-    'dockerfiles/train.dockerfile'
+    'dockerfiles/Dockerfile',
+    '--target',
+    'train'
   ]
 
-# Push training image
 - name: 'gcr.io/cloud-builders/docker'
   id: 'Push training image'
   args: [
@@ -19,7 +20,6 @@ steps:
     'europe-west1-docker.pkg.dev/$PROJECT_ID/group-30-container-registry/train-ehr'
   ]
 
-# Build evaluation image
 - name: 'gcr.io/cloud-builders/docker'
   id: 'Build evaluation image'
   args: [
@@ -28,10 +28,11 @@ steps:
     '-t',
     'europe-west1-docker.pkg.dev/$PROJECT_ID/group-30-container-registry/evaluate-ehr',
     '-f',
-    'dockerfiles/evaluate.dockerfile'
+    'dockerfiles/Dockerfile',
+    '--target',
+    'evaluate'
   ]
 
-# Push evaluation image
 - name: 'gcr.io/cloud-builders/docker'
   id: 'Push evaluation image'
   args: [
@@ -39,7 +40,6 @@ steps:
     'europe-west1-docker.pkg.dev/$PROJECT_ID/group-30-container-registry/evaluate-ehr'
   ]
 
-# Build inference image
 - name: 'gcr.io/cloud-builders/docker'
   id: 'Build inference image'
   args: [
@@ -48,15 +48,36 @@ steps:
     '-t',
     'europe-west1-docker.pkg.dev/$PROJECT_ID/group-30-container-registry/infer-ehr',
     '-f',
-    'dockerfiles/infer.dockerfile'
+    'dockerfiles/Dockerfile',
+    '--target',
+    'infer'
   ]
 
-# Push inference image
 - name: 'gcr.io/cloud-builders/docker'
   id: 'Push inference image'
   args: [
     'push',
     'europe-west1-docker.pkg.dev/$PROJECT_ID/group-30-container-registry/infer-ehr'
+  ]
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Build API image'
+  args: [
+    'build',
+    '.',
+    '-t',
+    'europe-west1-docker.pkg.dev/$PROJECT_ID/group-30-container-registry/api-ehr',
+    '-f',
+    'dockerfiles/Dockerfile',
+    '--target',
+    'api'
+  ]
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Push API image'
+  args: [
+    'push',
+    'europe-west1-docker.pkg.dev/$PROJECT_ID/group-30-container-registry/api-ehr'
   ]
 
 options:

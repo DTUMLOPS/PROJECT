@@ -1,0 +1,51 @@
+services:
+  api:
+    build:
+      context: dockerfiles
+      dockerfile: Dockerfile
+      target: api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./models:/app/models
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  train:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile
+      target: train
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    environment:
+      - MODEL_PATH=/app/models
+      - DATA_PATH=/app/data
+
+  evaluate:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile
+      target: evaluate
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    environment:
+      - MODEL_PATH=/app/models
+      - DATA_PATH=/app/data
+
+  infer:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile
+      target: infer
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    environment:
+      - MODEL_PATH=/app/models
+      - DATA_PATH=/app/data
