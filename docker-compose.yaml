@@ -2,12 +2,11 @@ services:
   api:
     build:
       context: .
-      dockerfile: ./dockerfiles/Dockerfile
+      dockerfile: Dockerfile
       target: api
     ports:
       - "8080:8080"
     volumes:
-      - ./models:/models
       - ./src:/src  # For hot reload
     environment:
       - MODEL_PATH=/models
@@ -17,7 +16,7 @@ services:
   train:
     build:
       context: .
-      dockerfile: dockerfiles/Dockerfile
+      dockerfile: Dockerfile
       target: train
     volumes:
       - ./data:/data
@@ -29,7 +28,7 @@ services:
   evaluate:
     build:
       context: .
-      dockerfile: dockerfiles/Dockerfile
+      dockerfile: Dockerfile
       target: evaluate
     volumes:
       - ./data:/data
@@ -37,11 +36,12 @@ services:
     environment:
       - MODEL_PATH=/models
       - DATA_PATH=/data
+      - WANDB_API_KEY=${WANDB_API_KEY}
 
   infer:
     build:
       context: .
-      dockerfile: dockerfiles/Dockerfile
+      dockerfile: Dockerfile
       target: infer
     volumes:
       - ./data:/data
@@ -49,3 +49,4 @@ services:
     environment:
       - MODEL_PATH=/models
       - DATA_PATH=/data
+      - WANDB_API_KEY=${WANDB_API_KEY}
