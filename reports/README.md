@@ -371,7 +371,10 @@ We used config files for reproducibility and to avoid losing information during 
 >
 > Answer:
 
---- question 14 fill here ---
+![alt text](figures/wandb.png)
+
+In this image we can see various metrics recorded during our training. As we can see, we focus more on the validation metrics, since there we can really see the model evolution. In this particular project, we value differently the true positives and true negatives, so we include metrics as AUROC and AUPRC, besides the usual metrics like loss and accuracy.
+
 
 ### Question 15
 
@@ -426,8 +429,12 @@ Although we didn’t profile the code, these strategies allowed us to efficientl
 > *We used the following two services: Engine and Bucket. Engine is used for... and Bucket is used for...*
 >
 > Answer:
+We used the following services:
+- Google Cloud Storage (GCS) to store and manage datasets and model files securely in the appropiate bucket.
+- Compute Engine provides virtual machines (VMs) to host and run our application workloads. It is used for deploying and running models, performing batch processing, and serving inference.
+- Artifact Registry to store and manage container images and other build artifacts. It helps streamline deployment workflows by hosting Docker images for our machine learning models and applications.
+- Secret Manager to store and manage sensitive information, such as the Weigths and Biases API key.
 
-Google Cloud Storage (GCS): For storing and managing datasets and model files securely.
 
 ### Question 18
 
@@ -442,7 +449,8 @@ Google Cloud Storage (GCS): For storing and managing datasets and model files se
 >
 > Answer:
 
---- question 18 fill here ---
+We used the compute engine to run our training for the model. We used instances with the following hardware: 
+e2-medium (2 vCPU, 1 core, 4 GB memory). It worked, but due to the low specs of this VM we ended up training with a member's PC .We are aware that there's GPU accelerated VMs as well, but the costs were too high and threatened to spend all the credits very quickly.
 
 ### Question 19
 
@@ -464,6 +472,8 @@ Google Cloud Storage (GCS): For storing and managing datasets and model files se
 
 ![this figure](figures/artifact.png)
 ![this figure](figures/artifact_2.png)
+![this figure](figures/artifact.png)
+![this figure](figures/artifact_2.png)
 
 ### Question 21
 
@@ -472,6 +482,8 @@ Google Cloud Storage (GCS): For storing and managing datasets and model files se
 >
 > Answer:
 
+![this figure](figures/build.png)
+![this figure](figures/build_2.png)
 ![this figure](figures/build.png)
 ![this figure](figures/build_2.png)
 
@@ -488,7 +500,10 @@ Google Cloud Storage (GCS): For storing and managing datasets and model files se
 >
 > Answer:
 
---- question 22 fill here ---
+We managed to train the model in the cloud, but, as explained in question 18, due to the low specs of this VM we ended up training with a member's PC .We are aware that there's GPU accelerated VMs as well, but the costs were too high and threatened to spend all the credits very quickly. 
+
+We managed to do it by simply logging into the VM via SSH and using it as we would for any other PC.
+
 
 ## Deployment
 
@@ -541,6 +556,7 @@ FastAPI makes the API easy to use, and it generates automatic documentation for 
 > Answer:
 
 For unit testing, we used pytest to ensure the API's core components were reliable and worked as expected. We tested the model’s forward pass to confirm that outputs had the correct shape and handled edge cases, like mismatched input sizes, without crashing. This helped verify the model’s ability to process both static and temporal data effectively. We also focused on the data loading pipeline, testing the PhysionetDataset and PhysionetDataModule to ensure batches were created correctly, shorter sequences were padded properly, and sequence lengths were accurate. These tests ensured data integrity throughout the training and evaluation processes. Additionally, we validated submodules like encoders and classifiers to confirm they handled edge cases, such as empty inputs or unexpected input sizes. This thorough testing helped us catch potential issues early, ensuring the API is robust and performs well in real-world scenarios.
+For unit testing, we used pytest to ensure the API's core components were reliable and worked as expected. We tested the model’s forward pass to confirm that outputs had the correct shape and handled edge cases, like mismatched input sizes, without crashing. This helped verify the model’s ability to process both static and temporal data effectively. We also focused on the data loading pipeline, testing the PhysionetDataset and PhysionetDataModule to ensure batches were created correctly, shorter sequences were padded properly, and sequence lengths were accurate. These tests ensured data integrity throughout the training and evaluation processes. Additionally, we validated submodules like encoders and classifiers to confirm they handled edge cases, such as empty inputs or unexpected input sizes. This thorough testing helped us catch potential issues early, ensuring the API is robust and performs well in real-world scenarios.
 ### Question 26
 
 > **Did you manage to implement monitoring of your deployed model? If yes, explain how it works. If not, explain how**
@@ -577,6 +593,10 @@ The most expensive part of the project was the use of the compute engine (for tr
 
 ![this figure](figures/cost.png)
 
+The most expensive part of the project was the use of the compute engine (for training), this ended up costing us 5.97 dollars. Luckily this cost was covered by DTU. The rest of the costs were negligible, coming out at a total of around 6.50 USD. See the figure below:
+
+![this figure](figures/cost.png)
+
 
 ### Question 28
 
@@ -592,6 +612,7 @@ The most expensive part of the project was the use of the compute engine (for tr
 >
 > Answer:
 
+No, we ran into many technical issues while making sure that the code ran on all of our machines. One of the team members had an old macbook that really caused many problems, so in the end we didn't have time to add extra components. However it was a very instructive learning experience, to figure out what we would do if this was to happen in a real life scenario.
 No, we ran into many technical issues while making sure that the code ran on all of our machines. One of the team members had an old macbook that really caused many problems, so in the end we didn't have time to add extra components. However it was a very instructive learning experience, to figure out what we would do if this was to happen in a real life scenario.
 
 ### Question 29

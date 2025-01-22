@@ -2,3 +2,4 @@
     remote = gcsremote
 ['remote "gcsremote"']
     url = gs://my_mlops_data_bucket_2025/
+    version_aware = true

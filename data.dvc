@@ -1,6 +1,256 @@
 outs:
-- md5: e50db73de32cab2cb53691ca132c0e34.dir
-  size: 1707610954
-  nfiles: 36
-  hash: md5
+- hash: md5
   path: data
+  files:
+  - relpath: processed/.gitkeep
+    md5: d41d8cd98f00b204e9800998ecf8427e
+    size: 0
+    cloud:
+      gcsremote:
+        etag: 0896c8c498c8898b031001
+        version_id: '1737556988339222'
+  - relpath: processed/P12Data_1.tar.gz
+    md5: d26db732cd16b04e0b44772da203cc69
+    size: 35022838
+    cloud:
+      gcsremote:
+        etag: 08c686c699c8898b031001
+        version_id: '1737556990460742'
+  - relpath: processed/P12Data_2.tar.gz
+    md5: ad3c603971f5d5a575dc1b01ca094749
+    size: 35031064
+    cloud:
+      gcsremote:
+        etag: 08f3e0859bc8898b031001
+        version_id: '1737556993601651'
+  - relpath: processed/P12Data_3.tar.gz
+    md5: b9e7fb35045126c00a00604fea2f0f42
+    size: 35040117
+    cloud:
+      gcsremote:
+        etag: 08a4d0b098c8898b031001
+        version_id: '1737556988012580'
+  - relpath: processed/P12Data_4.tar.gz
+    md5: ce841fb0dcd0f803935ecf11cbdfe930
+    size: 35020636
+    cloud:
+      gcsremote:
+        etag: 088bcacf9cc8898b031001
+        version_id: '1737556996908299'
+  - relpath: processed/P12Data_5.tar.gz
+    md5: d2bc07f8c2b99f2eaf809c4ac6c96cb4
+    size: 35013109
+    cloud:
+      gcsremote:
+        etag: 08a7cafa9ac8898b031001
+        version_id: '1737556993418535'
+  - relpath: processed/split_1/test_physionet2012_1.npy
+    md5: 2dae32fee3f57156a3dc88325a4f5dd1
+    size: 30363949
+    cloud:
+      gcsremote:
+        etag: 08b2f3e19ac8898b031001
+        version_id: '1737556993014194'
+  - relpath: processed/split_1/test_physionet2012_1.npy:Zone.Identifier
+    md5: 61bcc5fb32dcaa8bc257e103df2fbca2
+    size: 117
+    cloud:
+      gcsremote:
+        etag: 08c88bc298c8898b031001
+        version_id: '1737556988298696'
+  - relpath: processed/split_1/train_physionet2012_1.npy
+    md5: c057b506262b435c26e873f3fae32162
+    size: 245583364
+    cloud:
+      gcsremote:
+        etag: 08cbd3fc9fc8898b031001
+        version_id: '1737557003938251'
+  - relpath: processed/split_1/train_physionet2012_1.npy:Zone.Identifier
+    md5: 61bcc5fb32dcaa8bc257e103df2fbca2
+    size: 117
+    cloud:
+      gcsremote:
+        etag: 08e399c298c8898b031001
+        version_id: '1737556988300515'
+  - relpath: processed/split_1/validation_physionet2012_1.npy
+    md5: 785198007ea01048a72f81a1fef2d76b
+    size: 30548974
+    cloud:
+      gcsremote:
+        etag: 08f5f5ae9ac8898b031001
+        version_id: '1737556992178933'
+  - relpath: processed/split_1/validation_physionet2012_1.npy:Zone.Identifier
+    md5: 61bcc5fb32dcaa8bc257e103df2fbca2
+    size: 117
+    cloud:
+      gcsremote:
+        etag: 08f3e8c298c8898b031001
+        version_id: '1737556988310643'
+  - relpath: processed/split_2/test_physionet2012_2.npy
+    md5: 1f0ef8d9e505d0815d23adc32251b2ae
+    size: 30804799
+    cloud:
+      gcsremote:
+        etag: 089491fa9ac8898b031001
+        version_id: '1737556993411220'
+  - relpath: processed/split_2/test_physionet2012_2.npy:Zone.Identifier
+    md5: 8fb3b5e647f077230c679a631b75e0f8
+    size: 117
+    cloud:
+      gcsremote:
+        etag: 08f7a3c298c8898b031001
+        version_id: '1737556988301815'
+  - relpath: processed/split_2/train_physionet2012_2.npy
+    md5: a4a70de2b108ff650cd33d094e90b869
+    size: 244413776
+    cloud:
+      gcsremote:
+        etag: 08bbc9959dc8898b031001
+        version_id: '1737556998055099'
+  - relpath: processed/split_2/train_physionet2012_2.npy:Zone.Identifier
+    md5: 8fb3b5e647f077230c679a631b75e0f8
+    size: 117
+    cloud:
+      gcsremote:
+        etag: 0881b6c298c8898b031001
+        version_id: '1737556988304129'
+  - relpath: processed/split_2/validation_physionet2012_2.npy
+    md5: f52c0d7d073cfd70eada31b54d3f9dcd
+    size: 31277712
+    cloud:
+      gcsremote:
+        etag: 08e08b819bc8898b031001
+        version_id: '1737556993525216'
+  - relpath: processed/split_2/validation_physionet2012_2.npy:Zone.Identifier
+    md5: 8fb3b5e647f077230c679a631b75e0f8
+    size: 117
+    cloud:
+      gcsremote:
+        etag: 08bbd1c398c8898b031001
+        version_id: '1737556988324027'
+  - relpath: processed/split_3/test_physionet2012_3.npy
+    md5: 52107917e3eef85d0fa0079359dc43ea
+    size: 30457337
+    cloud:
+      gcsremote:
+        etag: 08efb4fa9ac8898b031001
+        version_id: '1737556993415791'
+  - relpath: processed/split_3/test_physionet2012_3.npy:Zone.Identifier
+    md5: fd924cdfb121993c4deea34d85fb2b6c
+    size: 117
+    cloud:
+      gcsremote:
+        etag: 08c2dcc298c8898b031001
+        version_id: '1737556988309058'
+  - relpath: processed/split_3/train_physionet2012_3.npy
+    md5: f0a727948ca55264732515b9b72f46de
+    size: 245151920
+    cloud:
+      gcsremote:
+        etag: 08b4ffdc9ec8898b031001
+        version_id: '1737557001322420'
+  - relpath: processed/split_3/train_physionet2012_3.npy:Zone.Identifier
+    md5: fd924cdfb121993c4deea34d85fb2b6c
+    size: 117
+    cloud:
+      gcsremote:
+        etag: 08e7abc298c8898b031001
+        version_id: '1737556988302823'
+  - relpath: processed/split_3/validation_physionet2012_3.npy
+    md5: fb2ca57ab61ab9859ed0573294792d78
+    size: 30887030
+    cloud:
+      gcsremote:
+        etag: 08b6998b9bc8898b031001
+        version_id: '1737556993690806'
+  - relpath: processed/split_3/validation_physionet2012_3.npy:Zone.Identifier
+    md5: fd924cdfb121993c4deea34d85fb2b6c
+    size: 117
+    cloud:
+      gcsremote:
+        etag: 0882bec298c8898b031001
+        version_id: '1737556988305154'
+  - relpath: processed/split_4/test_physionet2012_4.npy
+    md5: ab936e85f785ba80d059d984302eb917
+    size: 31104067
+    cloud:
+      gcsremote:
+        etag: 08d5c4fc9ac8898b031001
+        version_id: '1737556993450581'
+  - relpath: processed/split_4/test_physionet2012_4.npy:Zone.Identifier
+    md5: 7e8f68f0d76d01d025d7ed26bcc7439d
+    size: 117
+    cloud:
+      gcsremote:
+        etag: 088efcc198c8898b031001
+        version_id: '1737556988296718'
+  - relpath: processed/split_4/train_physionet2012_4.npy
+    md5: 3b7b4350f7f5f6bf05dcd3bb29a2bdd3
+    size: 245154739
+    cloud:
+      gcsremote:
+        etag: 0896ee80a2c8898b031001
+        version_id: '1737557008201494'
+  - relpath: processed/split_4/train_physionet2012_4.npy:Zone.Identifier
+    md5: 7e8f68f0d76d01d025d7ed26bcc7439d
+    size: 117
+    cloud:
+      gcsremote:
+        etag: 08ce89c298c8898b031001
+        version_id: '1737556988298446'
+  - relpath: processed/split_4/validation_physionet2012_4.npy
+    md5: 1bdd13c2eca76ebef1d6cb94c5624f86
+    size: 30237481
+    cloud:
+      gcsremote:
+        etag: 08d9b4fb9ac8898b031001
+        version_id: '1737556993432153'
+  - relpath: processed/split_4/validation_physionet2012_4.npy:Zone.Identifier
+    md5: 7e8f68f0d76d01d025d7ed26bcc7439d
+    size: 117
+    cloud:
+      gcsremote:
+        etag: 08f9abc298c8898b031001
+        version_id: '1737556988302841'
+  - relpath: processed/split_5/test_physionet2012_5.npy
+    md5: ca1cf9917d26a39a6bcb913316b11cf2
+    size: 30432688
+    cloud:
+      gcsremote:
+        etag: 0898fdc39cc8898b031001
+        version_id: '1737556996718232'
+  - relpath: processed/split_5/test_physionet2012_5.npy:Zone.Identifier
+    md5: c588ff24597d6ffbcc54ee2071215846
+    size: 117
+    cloud:
+      gcsremote:
+        etag: 088fd7c298c8898b031001
+        version_id: '1737556988308367'
+  - relpath: processed/split_5/train_physionet2012_5.npy
+    md5: 74067d9c98681eeb435e0dc3d73cf657
+    size: 244964900
+    cloud:
+      gcsremote:
+        etag: 088bcad69fc8898b031001
+        version_id: '1737557003314443'
+  - relpath: processed/split_5/train_physionet2012_5.npy:Zone.Identifier
+    md5: c588ff24597d6ffbcc54ee2071215846
+    size: 117
+    cloud:
+      gcsremote:
+        etag: 08e98bc298c8898b031001
+        version_id: '1737556988298729'
+  - relpath: processed/split_5/validation_physionet2012_5.npy
+    md5: a2ba3a51cc41b96d9a5a98b5fb3d4208
+    size: 31098699
+    cloud:
+      gcsremote:
+        etag: 08a791e29ac8898b031001
+        version_id: '1737556993018023'
+  - relpath: processed/split_5/validation_physionet2012_5.npy:Zone.Identifier
+    md5: c588ff24597d6ffbcc54ee2071215846
+    size: 117
+    cloud:
+      gcsremote:
+        etag: 08edf2c198c8898b031001
+        version_id: '1737556988295533'
