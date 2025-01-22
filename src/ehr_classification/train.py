@@ -10,14 +10,18 @@ import hydra
 from omegaconf import DictConfig, OmegaConf
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
+import torch
+import wandb
+
+from pytorch_lightning.loggers import WandbLogger
 
 from ehr_classification.data import PhysionetDataModule
-from ehr_classification.model import DSSMLightning
+from ehr_classification.model import DSSMLightning, SaveModelAsArtifact
 
 logger = logging.getLogger(__name__)
 
 
-def train_single_split(cfg: DictConfig, split_number: int) -> dict:
+def train_single_split(cfg: DictConfig, split_number: int, wandb_logger: WandbLogger) -> dict:
     """
     Train the DSSM model on a single data split.
 
@@ -43,6 +47,7 @@ def train_single_split(cfg: DictConfig, split_number: int) -> dict:
     model = DSSMLightning(
         **cfg.model, learning_rate=cfg.training.learning_rate, class_weights=cfg.training.class_weights
     )
+    model.on_train_end = SaveModelAsArtifact.on_train_end.__get__(model, pl.LightningModule)
 
     # Setup callbacks
     callbacks = [
@@ -63,6 +68,7 @@ def train_single_split(cfg: DictConfig, split_number: int) -> dict:
         devices=1,
         callbacks=callbacks,
         deterministic=True,
+        logger=wandb_logger,
     )
 
     # Train and test
@@ -126,6 +132,14 @@ def train(cfg: DictConfig) -> None:
     """
     logger.info("Starting cross-validation training...")
     logger.info(f"Using config:\n{OmegaConf.to_yaml(cfg)}")
+    wandb.login(key="862cb3811297e61bdd4495300bb45c4a321e6004")
+
+    # initialise the wandb logger and name your wandb project
+    wandb_logger = WandbLogger(project='dtumlops', log_model=True)
+
+    # add your batch size to the wandb config
+    wandb_logger.experiment.config["batch_size"] = cfg.training.batch_size
+    wandb_logger.experiment.config["lr"] = cfg.training.learning_rate
 
     # Determine splits to use
     if cfg.data.splits:
@@ -138,7 +152,7 @@ def train(cfg: DictConfig) -> None:
     # Train on each split and collect results
     all_results = []
     for split_number in splits:
-        split_results = train_single_split(cfg, split_number)
+        split_results = train_single_split(cfg, split_number, wandb_logger)
         all_results.append(split_results)
 
     for split_number, split_results in enumerate(all_results, 1):

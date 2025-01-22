@@ -8,6 +8,7 @@ import torch.nn as nn
 import pytorch_lightning as pl
 import torchmetrics
 from typing import Optional, Union
+import wandb
 
 
 class DSSMLightning(pl.LightningModule):
@@ -65,6 +66,9 @@ class DSSMLightning(pl.LightningModule):
         self.test_accuracy = torchmetrics.Accuracy(task="binary", num_classes=2)
         self.auroc = torchmetrics.AUROC(task="binary", num_classes=2)
         self.auprc = torchmetrics.AveragePrecision(task="binary", num_classes=2)
+
+        # save hyper-parameters to self.hparamsm auto-logged by wandb
+        self.save_hyperparameters()
 
     def forward(
         self, temporal_data: torch.Tensor, static_data: torch.Tensor, seq_lengths: torch.Tensor
@@ -321,3 +325,18 @@ class Classifier(nn.Module):
         Forward pass for Classifier.
         """
         return self.network(x)
+
+# Save the model as an artifact at the end of training
+class SaveModelAsArtifact(pl.LightningModule):
+    def on_train_end(self):
+        # Save the checkpoint
+        artifact_path = "./checkpoints/best_model.ckpt"
+        wandb.save(artifact_path)
+        
+        # Log the artifact to W&B
+        artifact = wandb.Artifact(
+            name="your_model_artifact_name",
+            type="model",
+        )
+        artifact.add_file(artifact_path)
+        wandb.log_artifact(artifact)

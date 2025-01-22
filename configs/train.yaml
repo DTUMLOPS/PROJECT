@@ -24,6 +24,6 @@ training:
   batch_size: 64
   learning_rate: 0.0001
   class_weights: [1.0, 7.143]
-  use_gpu: false
+  use_gpu: true
   checkpoint_dir: ${paths.model_dir}
   patience: 10
