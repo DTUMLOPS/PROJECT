@@ -375,6 +375,8 @@ We used config files for reproducibility and to avoid losing information during 
 
 In this image we can see various metrics recorded during our training. As we can see, we focus more on the validation metrics, since there we can really see the model evolution. In this particular project, we value differently the true positives and true negatives, so we include metrics as AUROC and AUPRC, besides the usual metrics like loss and accuracy.
 
+W&B project repo - https://wandb.ai/alexcomas/dtumlops
+
 
 ### Question 15
 
