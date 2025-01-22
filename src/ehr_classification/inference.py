@@ -264,17 +264,17 @@ def main(cfg: DictConfig) -> None:
     logger.info(OmegaConf.to_yaml(cfg))
 
     # Initialize wandb
-    wandb.init(project="dtumlops", entity="alexcomas")
+    wandb.init(project="dtumlops", entity="alexcomas", job_type="inference")
 
     # Login to wandb
     wandb.login(key="862cb3811297e61bdd4495300bb45c4a321e6004")
 
     # Use the artifact API to download the file
-    artifact = wandb.use_artifact('alexcomas/dtumlops/ehr_classification:latest', type='model')
+    artifact = wandb.use_artifact('ehr_classification:latest', type='model')
     artifact_dir = artifact.download()
 
     # Load the model checkpoint
-    model_path = f"{artifact_dir}/best_model.ckpt"
+    model_path = f"{artifact_dir}/model.ckpt"
 
     # Initialize inference engine
     engine = InferenceEngine(use_gpu=cfg.training.use_gpu)
