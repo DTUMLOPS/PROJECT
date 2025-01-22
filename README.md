@@ -155,7 +155,7 @@ This project provides several Docker containers for training, evaluation, infere
 
 Set your WandB API key:
 ```bash
-export WANDB_API_KEY=your_key_from_wandb.ai/settings
+export WANDB_API_KEY=your_key_from_wandb
 ```
 
 # Docker Commands
