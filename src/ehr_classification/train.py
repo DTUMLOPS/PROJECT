@@ -1,9 +1,13 @@
 """
-Training script for the DSSM model with cross-validation support.
+train.py 
+
+This file trains the DSSM and supports cross-validation over multiple data splits.
 """
 
 import logging
 from pathlib import Path
+from typing import List, Dict, Optional
+
 import numpy as np
 import hydra
 from omegaconf import DictConfig, OmegaConf
@@ -17,7 +21,16 @@ logger = logging.getLogger(__name__)
 
 
 def train_single_split(cfg: DictConfig, split_number: int) -> dict:
-    """Train model on a single data split."""
+    """
+    Train the DSSM model on a single data split.
+
+    Args:
+        cfg (DictConfig): Hydra configuration object.
+        split_number (int): The data split number to use for training.
+
+    Returns:
+        Dict: A dictionary containing test metrics (loss, accuracy, AUROC, AUPRC).
+    """
     logger.info(f"Training on split {split_number}")
 
     # Update split-specific paths
@@ -62,8 +75,10 @@ def train_single_split(cfg: DictConfig, split_number: int) -> dict:
     return test_results[0]
 
 
-def print_results(results: dict, split_number: int = None):
-    """Print formatted results with all metrics."""
+def print_results(results: dict, split_number: int = None)-> None:
+    """
+    Print formatted results for a specific split or overall results.
+    """
     if split_number is not None:
         logger.info(f"\nResults for split {split_number}:")
         logger.info("=" * 50)
@@ -84,7 +99,9 @@ def print_results(results: dict, split_number: int = None):
 
 
 def aggregate_metrics(all_results: list) -> dict:
-    """Calculate mean and std of all metrics across splits."""
+    """
+    Calculate mean and std of all metrics across splits.
+    """
     metrics_dict = {}
 
     # Get all unique metric names
@@ -104,7 +121,12 @@ def aggregate_metrics(all_results: list) -> dict:
 
 @hydra.main(config_path="../../configs", config_name="train", version_base="1.1")
 def train(cfg: DictConfig) -> None:
-    """Train the model with cross-validation."""
+    """
+    Train the DSSM model with cross-validation.
+
+    Args:
+        cfg (DictConfig): Configuration object containing training settings.
+    """
     logger.info("Starting cross-validation training...")
     logger.info(f"Using config:\n{OmegaConf.to_yaml(cfg)}")
 

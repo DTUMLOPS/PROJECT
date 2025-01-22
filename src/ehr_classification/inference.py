@@ -1,5 +1,8 @@
 """
-Core inference module for the DSSM model.
+interface.py
+
+Core inference module for the DSSM model. 
+This file includes utilities for loading models, validating input data, and performing predictions. 
 """
 
 import logging
@@ -20,8 +23,13 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class InferenceInput:
-    """Data class for inference input validation."""
-
+    """
+    Data class for validating and storing inference input data.
+    
+    Attributes:
+        temporal_data (np.ndarray): Time-series data for inference.
+        static_data (np.ndarray): Static features for inference.
+    """
     temporal_data: np.ndarray
     static_data: np.ndarray
 
@@ -58,13 +66,26 @@ class InferenceInput:
 
 @dataclass
 class InferenceOutput:
-    """Data class for inference output."""
-
+    """
+    Data class for structured inference output.
+    
+    Attributes:
+        probabilities (np.ndarray): Class probabilities for predictions.
+        predicted_classes (np.ndarray): Predicted class labels.
+    """
     probabilities: np.ndarray
     predicted_classes: np.ndarray
 
     def get_interpretation(self, confidence_threshold: float = 0.7) -> str:
-        """Generate human-readable interpretation of the prediction."""
+        """
+        Generate a human-readable interpretation of the prediction.
+
+        Args:
+            confidence_threshold (float): Threshold for low-confidence warnings.
+
+        Returns:
+            str: Interpretation of the prediction.
+        """
         prob = self.probabilities[0]
         pred_class = self.predicted_classes[0]
         confidence = prob[pred_class]
@@ -93,7 +114,12 @@ class InferenceOutput:
         return message
 
     def to_dict(self) -> Dict:
-        """Convert output to dictionary format."""
+        """
+        Convert the output to a dictionary format.
+
+        Returns:
+            Dict: Output in dictionary format.
+        """
         return {
             "probabilities": self.probabilities.tolist(),
             "predicted_classes": self.predicted_classes.tolist(),
@@ -102,13 +128,20 @@ class InferenceOutput:
 
 
 class ModelManager:
-    """Handles model loading and management."""
-
+    """
+    Handles model loading and management.
+    """
     def __init__(self):
         self._models: Dict[str, DSSMLightning] = {}
 
     def load_model(self, model_path: str, model_id: str = "default") -> None:
-        """Load model from checkpoint and cache it."""
+        """
+        Load a model from a checkpoint and cache it.
+
+        Args:
+            model_path (str): Path to the model checkpoint.
+            model_id (str): Identifier for the model.
+        """
         try:
             model = DSSMLightning.load_from_checkpoint(model_path)
             model.eval()
@@ -118,32 +151,50 @@ class ModelManager:
             raise RuntimeError(f"Error loading model: {e}")
 
     def get_model(self, model_id: str = "default") -> Optional[DSSMLightning]:
-        """Get loaded model by ID."""
+        """
+        Get a loaded model by ID.
+
+        Args:
+            model_id (str): Identifier for the model.
+
+        Returns:
+            Optional[DSSMLightning]: The loaded model or None if not found.
+        """
         return self._models.get(model_id)
 
     def unload_model(self, model_id: str = "default") -> None:
-        """Unload model from memory."""
+        """
+        Unload a model from memory.
+
+        Args:
+            model_id (str): Identifier for the model to unload.
+        """
         if model_id in self._models:
             del self._models[model_id]
             logger.info(f"Model {model_id} unloaded")
 
 
 class InferenceEngine:
-    """Main inference engine."""
-
+    """
+    Inference engine for processing input data and generating predictions.
+    """
     def __init__(self, use_gpu: bool = False):
         self.device = torch.device("cuda" if use_gpu and torch.cuda.is_available() else "cpu")
         self.model_manager = ModelManager()
 
     def load_model(self, model_path: str, model_id: str = "default") -> None:
-        """Load model using model manager."""
+        """
+        Load a model for inference.
+        """
         self.model_manager.load_model(model_path, model_id)
         model = self.model_manager.get_model(model_id)
         if model:
             model.to(self.device)
 
     def _preprocess(self, inference_input: InferenceInput) -> tuple:
-        """Preprocess input data."""
+        """
+        Preprocess input data.
+        """
         inference_input.validate()
 
         temporal_data = inference_input.temporal_data
@@ -166,7 +217,7 @@ class InferenceEngine:
         self, temporal_data: Union[np.ndarray, List], static_data: Union[np.ndarray, List], model_id: str = "default"
     ) -> InferenceOutput:
         """
-        Make predictions using the model.
+        Perform predictions using the model.
 
         Args:
             temporal_data: Time series data [sequence_length, num_features] or [batch_size, sequence_length, num_features]
@@ -174,7 +225,7 @@ class InferenceEngine:
             model_id: ID of the model to use for inference
 
         Returns:
-            InferenceOutput containing probabilities and predicted classes
+            InferenceOutput: containing probabilities and predicted classes
         """
         # Convert lists to numpy arrays if necessary
         if isinstance(temporal_data, list):
@@ -203,7 +254,9 @@ class InferenceEngine:
 
 @hydra.main(config_path="../../configs", config_name="evaluate", version_base="1.1")
 def main(cfg: DictConfig) -> None:
-    """Example usage of the inference engine."""
+    """
+    Main entry point for testing the inference engine.
+    """    
     logger.info("\nConfiguration:")
     logger.info(OmegaConf.to_yaml(cfg))
 

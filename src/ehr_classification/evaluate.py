@@ -1,5 +1,8 @@
 """
-Evaluation script for the DSSM model.
+evaluate.py
+
+This file contains the evaluation script for the DSSM model. It includes functionality 
+to load checkpoints, perform evaluation, and log the results.
 """
 
 import random
@@ -52,7 +55,12 @@ def find_checkpoint(model_dir: Path, split_number: int, mode: str = "random") ->
 
 @hydra.main(config_path="../../configs", config_name="evaluate", version_base="1.1")
 def evaluate(cfg: DictConfig) -> None:
-    """Evaluate a trained model with given configuration."""
+    """
+    Evaluate a trained model with given configuration.
+    
+    Args:
+        cfg (DictConfig): Configuration object loaded by Hydra.
+    """
     logger.info("Starting evaluation...")
 
     logger.info("\nConfiguration:")
@@ -79,7 +87,9 @@ def evaluate(cfg: DictConfig) -> None:
     # Create data module and load model
     try:
         datamodule = PhysionetDataModule(
-            data_dir=cfg.data.base_dir, split_number=cfg.data.split_number, batch_size=cfg.training.batch_size
+            data_dir=cfg.data.base_dir, 
+            split_number=cfg.data.split_number, 
+            batch_size=cfg.training.batch_size
         )
 
         model = DSSMLightning.load_from_checkpoint(checkpoint_path)
@@ -88,9 +98,11 @@ def evaluate(cfg: DictConfig) -> None:
     except Exception as e:
         logger.error(f"Error setting up evaluation: {e}")
         return
-
+    
+    # Initialize Trainer
     trainer = pl.Trainer(accelerator="gpu" if cfg.training.use_gpu else "cpu", devices=1, deterministic=True)
 
+    # Perform evaluation
     try:
         results = trainer.test(model, datamodule=datamodule)
 

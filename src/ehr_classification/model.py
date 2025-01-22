@@ -1,27 +1,52 @@
 """
-PyTorch Lightning implementation of the DSSM model.
+model.py
+
+This file defines the neural network components and the main model architecture 
+used for classification tasks in the DSSM model.
 """
 
 import torch
 import torch.nn as nn
 import pytorch_lightning as pl
 import torchmetrics
+from typing import Optional, Union
+
 
 
 class DSSMLightning(pl.LightningModule):
+    """
+    DSSM implementation using PyTorch Lightning.
+    This model is designed for classification tasks using both temporal and static input data.
+    """
+        
     def __init__(
         self,
-        input_size,
-        hidden_size,
-        static_input_size,
-        num_classes,
-        num_layers=2,
-        dropout_rate=0.2,
-        bidirectional=True,
-        learning_rate=0.001,
-        class_weights=None,
-    ):
+        input_size: int,
+        hidden_size: int,
+        static_input_size: int,
+        num_classes: int,
+        num_layers: int = 2,
+        dropout_rate: float = 0.2,
+        bidirectional: bool = True,
+        learning_rate: float = 0.001,
+        class_weights: Optional[Union[list, torch.Tensor]] = None,
+    ) -> None:
+        """
+        Initialize the model.
+
+        Args:
+            input_size (int): Number of features in the temporal input.
+            hidden_size (int): Number of hidden units in the encoder.
+            static_input_size (int): Number of features in the static input.
+            num_classes (int): Number of target classes.
+            num_layers (int, optional): Number of RNN layers. Defaults to 2.
+            dropout_rate (float, optional): Dropout rate for regularization. Defaults to 0.2.
+            bidirectional (bool, optional): Whether to use bidirectional RNN. Defaults to True.
+            learning_rate (float, optional): Learning rate for the optimizer. Defaults to 0.001.
+            class_weights (Optional[Union[list, torch.Tensor]], optional): Class weights for loss function. Defaults to None.
+        """
         super().__init__()
+
         self.save_hyperparameters()
 
         self.hidden_size = hidden_size
@@ -44,7 +69,20 @@ class DSSMLightning(pl.LightningModule):
         self.auroc = torchmetrics.AUROC(task="binary", num_classes=2)
         self.auprc = torchmetrics.AveragePrecision(task="binary", num_classes=2)
 
-    def forward(self, temporal_data, static_data, seq_lengths):
+    def forward(
+        self, temporal_data: torch.Tensor, static_data: torch.Tensor, seq_lengths: torch.Tensor
+    ) -> torch.Tensor:
+        """
+        Forward pass for the DSSM model.
+
+        Args:
+            temporal_data (torch.Tensor): Temporal input data of shape [batch_size, seq_len, input_size].
+            static_data (torch.Tensor): Static input data of shape [batch_size, static_input_size].
+            seq_lengths (torch.Tensor): Sequence lengths for the temporal data.
+
+        Returns:
+            torch.Tensor: Output logits of shape [batch_size, num_classes].
+        """
         batch_size = temporal_data.size(0)
 
         temporal_repr = self.temporal_encoder(temporal_data, seq_lengths)
@@ -57,10 +95,16 @@ class DSSMLightning(pl.LightningModule):
         return self.classifier(combined)
 
     def configure_optimizers(self):
+        """
+        Configure the optimizer for training.
+        """
         optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)
         return optimizer
 
-    def _shared_step(self, batch, batch_idx):
+    def _shared_step(self, batch: tuple, batch_idx: int):
+        """
+        Shared logic for training, validation, and test steps.
+        """
         temporal_data, static_data, labels, seq_lengths = batch
         outputs = self(temporal_data, static_data, seq_lengths)  # Shape: [batch_size, 2]
         loss = self.criterion(outputs, labels)
@@ -68,14 +112,34 @@ class DSSMLightning(pl.LightningModule):
         preds = torch.argmax(outputs, dim=1)  # Shape: [batch_size]
         return loss, probs, preds, labels
 
-    def training_step(self, batch, batch_idx):
+    def training_step(self, batch: tuple, batch_idx: int) -> torch.Tensor:
+        """
+        Training step logic.
+
+        Args:
+            batch (tuple): Batch of data.
+            batch_idx (int): Batch index.
+
+        Returns:
+            torch.Tensor: Training loss.
+        """
         loss, probs, preds, labels = self._shared_step(batch, batch_idx)
         self.train_accuracy(preds, labels)
         self.log("train_loss", loss, prog_bar=True)
         self.log("train_acc", self.train_accuracy, on_step=True, on_epoch=True, prog_bar=True)
         return loss
 
-    def validation_step(self, batch, batch_idx):
+    def validation_step(self, batch: tuple, batch_idx: int) -> torch.Tensor:
+        """
+        Validation step logic.
+
+        Args:
+            batch (tuple): Batch of data.
+            batch_idx (int): Batch index.
+
+        Returns:
+            torch.Tensor: Validation loss.
+        """
         loss, probs, preds, labels = self._shared_step(batch, batch_idx)
         self.val_accuracy(preds, labels)
         self.auroc(probs[:, 1], labels)  # AUROC expects probabilities of positive class
@@ -87,7 +151,10 @@ class DSSMLightning(pl.LightningModule):
         self.log("val_auprc", self.auprc, on_epoch=True)
         return loss
 
-    def test_step(self, batch, batch_idx):
+    def test_step(self, batch: tuple, batch_idx: int) :
+        """
+        Test step logic.
+        """
         loss, probs, preds, labels = self._shared_step(batch, batch_idx)
 
         self.test_accuracy(preds, labels)
@@ -104,7 +171,28 @@ class DSSMLightning(pl.LightningModule):
 
 
 class TemporalEncoder(nn.Module):
-    def __init__(self, input_size, hidden_size, num_layers, dropout_rate, bidirectional):
+    """
+    Temporal Encoder that uses LSTM followed by a Multihead Attention mechanism.
+    """
+
+    def __init__(
+        self,
+        input_size: int,
+        hidden_size: int,
+        num_layers: int,
+        dropout_rate: float,
+        bidirectional: bool,
+    ) -> None:
+        """
+        Initialize the TemporalEncoder.
+
+        Args:
+            input_size (int): Number of input features for each timestep.
+            hidden_size (int): Number of hidden units in the LSTM.
+            num_layers (int): Number of LSTM layers.
+            dropout_rate (float): Dropout rate for regularization.
+            bidirectional (bool): Whether the LSTM is bidirectional.
+        """
         super(TemporalEncoder, self).__init__()
 
         self.lstm = nn.LSTM(
@@ -117,10 +205,24 @@ class TemporalEncoder(nn.Module):
         )
 
         self.attention = nn.MultiheadAttention(
-            embed_dim=hidden_size * (2 if bidirectional else 1), num_heads=4, dropout=dropout_rate
+            embed_dim=hidden_size * (2 if bidirectional else 1), 
+            num_heads=4, 
+            dropout=dropout_rate
         )
 
-    def forward(self, temporal_data, seq_lengths):
+    def forward(
+        self, temporal_data: torch.Tensor, seq_lengths: torch.Tensor
+    ) -> torch.Tensor:
+        """
+        Forward pass for TemporalEncoder.
+
+        Args:
+            temporal_data (torch.Tensor): Input tensor of shape [batch_size, seq_len, input_size].
+            seq_lengths (torch.Tensor): Sequence lengths for each sample in the batch.
+
+        Returns:
+            torch.Tensor: Output tensor of shape [batch_size, seq_len, hidden_size].
+        """
         # Pack sequence for LSTM
         packed_input = nn.utils.rnn.pack_padded_sequence(
             temporal_data, seq_lengths.cpu(), batch_first=True, enforce_sorted=False
@@ -142,7 +244,10 @@ class TemporalEncoder(nn.Module):
     def _create_attention_mask(tensor, seq_lengths):
         return torch.arange(tensor.size(1))[None, :] >= seq_lengths[:, None]
 
-    def _apply_attention(self, lstm_output, mask):
+    def _apply_attention(self, lstm_output: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
+        """
+        Apply Multihead Attention to LSTM outputs.
+        """
         # Prepare attention inputs
         query = lstm_output.permute(1, 0, 2)
         key = value = query
@@ -153,29 +258,65 @@ class TemporalEncoder(nn.Module):
 
 
 class StaticEncoder(nn.Module):
-    def __init__(self, input_size, hidden_size, dropout_rate):
+    """
+    Static Encoder using a feed-forward neural network.
+    """
+
+    def __init__(self, input_size: int, hidden_size: int, dropout_rate: float) -> None:
+        """
+        Initialize the StaticEncoder.
+        """
         super(StaticEncoder, self).__init__()
 
         self.network = nn.Sequential(
-            nn.Linear(input_size, hidden_size), nn.ReLU(), nn.Dropout(dropout_rate), nn.Linear(hidden_size, hidden_size)
+            nn.Linear(input_size, hidden_size), 
+            nn.ReLU(), 
+            nn.Dropout(dropout_rate), 
+            nn.Linear(hidden_size, hidden_size)
         )
 
-    def forward(self, static_data):
+    def forward(self, static_data: torch.Tensor) -> torch.Tensor:
+        """
+        Forward pass for StaticEncoder.
+        """
         return self.network(static_data)
 
 
 class StateTransition(nn.Module):
-    def __init__(self, hidden_size, dropout_rate):
+    """
+    State Transition network that transforms encoded temporal data.
+    """
+
+    def __init__(self, hidden_size: int, dropout_rate: float) -> None:
+        """
+        Initialize the StateTransition
+        """
         super(StateTransition, self).__init__()
 
         self.network = nn.Sequential(nn.Linear(hidden_size, hidden_size), nn.Tanh(), nn.Dropout(dropout_rate))
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Forward pass for StateTransition.
+
+        Args:
+            x (torch.Tensor): Input tensor of shape [batch_size, hidden_size].
+
+        Returns:
+            torch.Tensor: Transformed tensor of shape [batch_size, hidden_size].
+        """
         return self.network(x)
 
 
 class Classifier(nn.Module):
-    def __init__(self, input_size, hidden_size, num_classes, dropout_rate):
+    """
+    Classifier network for generating predictions.
+    """
+
+    def __init__(self, input_size: int, hidden_size: int, num_classes: int, dropout_rate: float) -> None:
+        """
+        Initialize the Classifier.
+        """
         super(Classifier, self).__init__()
 
         self.network = nn.Sequential(
@@ -186,4 +327,8 @@ class Classifier(nn.Module):
         )
 
     def forward(self, x):
+        """
+        Forward pass for Classifier.
+        """
         return self.network(x)
+    
