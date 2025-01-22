@@ -49,26 +49,41 @@ The directory structure of the project looks like this:
 ├── .github/                  # Github actions and dependabot
 │   ├── dependabot.yaml
 │   └── workflows/
+│       ├── docker.yaml
+│       ├── lint.yaml
 │       └── tests.yaml
 ├── configs/                  # Configuration files
+│   ├── model/
+│   │   └── dssm.yaml
+│   ├── evaluate.yaml
+│   ├── train.yaml
+│   └── README.md
 ├── data/                     # Data directory
 │   └── processed
+│       └── .gitkeep
 ├── dockerfiles/              # Dockerfiles
-│   ├── api.Dockerfile
-│   └── train.Dockerfile
+│   ├── api.dockerfile
+│   ├── evaluate.dockerfile
+│   ├── infer.dockerfile
+│   ├── train.dockerfile
+│   └── README.md
 ├── models/                   # Trained models
+│   └── .gitkeep
 ├── reports/                  # Reports
-│   └── figures/
+│   ├── figures/
+│   │   └── .gitkeep
+│   └── README.md
 ├── src/                      # Source code
-│   ├── project_name/
+│   ├── ehr_classification/
 │   │   ├── __init__.py
 │   │   ├── api.py
 │   │   ├── data.py
 │   │   ├── evaluate.py
-│   │   ├── models.py
+│   │   ├── inference.py
+│   │   ├── model.py
 │   │   ├── train.py
 │   │   └── visualize.py
-└── tests/                    # Tests
+├── tests/                    # Tests
 │   ├── __init__.py
 │   ├── test_api.py
 │   ├── test_data.py
@@ -80,7 +95,7 @@ The directory structure of the project looks like this:
 ├── README.md                 # Project README
 ├── requirements.txt          # Project requirements
 ├── requirements_dev.txt      # Development requirements
-└── tasks.py                  # Project tasks -
+└── tasks.py                  # Project tasks
 ```
 
 ## Setup environment and install requirements

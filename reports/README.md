@@ -95,8 +95,8 @@ will check the repositories and the code to verify your answers.
 * [ ] Check how robust your model is towards data drifting (M27)
 * [ ] Deploy to the cloud a drift detection API (M27)
 * [ ] Instrument your API with a couple of system metrics (M28)
-* [ ] Setup cloud monitoring of your instrumented application (M28)
-* [ ] Create one or more alert systems in GCP to alert you if your app is not behaving correctly (M28)
+* [x] Setup cloud monitoring of your instrumented application (M28)
+* [x] Create one or more alert systems in GCP to alert you if your app is not behaving correctly (M28)
 * [ ] If applicable, optimize the performance of your data loading using distributed data loading (M29)
 * [ ] If applicable, optimize the performance of your training pipeline by using distributed training (M30)
 * [ ] Play around with quantization, compilation and pruning for you trained models to increase inference speed (M31)
@@ -105,7 +105,7 @@ will check the repositories and the code to verify your answers.
 
 * [ ] Write some documentation for your application (M32)
 * [ ] Publish the documentation to GitHub Pages (M32)
-* [ ] Revisit your initial project description. Did the project turn out as you wanted?
+* [x] Revisit your initial project description. Did the project turn out as you wanted?
 * [ ] Create an architectural diagram over your MLOps pipeline
 * [x] Make sure all group members have an understanding about all parts of the project
 * [x] Uploaded all your code to GitHub
@@ -534,7 +534,7 @@ FastAPI makes the API easy to use, and it generates automatic documentation for 
 >
 > Answer:
 
---- question 24 fill here ---
+Yes we managed to deploy our API to google cloud run. We had serios issues doing this, and it was difficult to debug because each push to google cloud would take around 7 minutes to update. In the end we found that it was a proble with weights and biases, that did not correctly call the init function. Again a textbook example of something working locally but not in the cloud. Finally we got the link pushed for our api and everyone could use it by going to link/predict
 
 ### Question 25
 
@@ -563,7 +563,7 @@ For unit testing, we used pytest to ensure the API's core components were reliab
 >
 > Answer:
 
---- question 26 fill here ---
+Yes, we set up monitoring in Google Cloud to track how long API calls take and how much data they use. This helps us spot and fix issues like slow responses or high resource usage quickly. We also set up alerts to warn us if something unusual happens, like a spike in errors or latency. Adding more monitoring would make our application even better. For example, tracking how well the model performs over time would help us catch problems like outdated predictions. Monitoring user activity could also show us how to improve the app. Overall, it keeps everything running smoothly and helps us plan for the future.
 
 ## Overall discussion of project
 
@@ -618,6 +618,38 @@ No, we ran into many technical issues while making sure that the code ran on all
 >
 > Answer:
 
+DEV → Local Machine:
+
+Development starts locally with coding, pre-commit checks, and experiment tracking.
+Local Machine → GitHub:
+
+Code is committed and pushed to GitHub for version control.
+Local Machine → DVC using Google Cloud:
+
+Data and models are version-controlled using DVC, which stores large files (datasets, models) in Google Cloud.
+Local training or processing interacts with DVC for data management.
+Local Machine → FastAPI:
+
+After experimentation, the FastAPI app is developed and tested locally.
+GitHub → GitHub Actions:
+
+Code push triggers GitHub Actions to:
+Run tests, linting, and static analysis.
+Validate the FastAPI app.
+Trigger containerization processes.
+FastAPI → Docker:
+
+The FastAPI app is containerized with Docker for deployment.
+Local Machine → W&B/Hydra:
+
+During experimentation, tools like Weights & Biases (W&B) or Hydra are used to track experiments and hyperparameter tuning.
+W&B/Hydra → Docker:
+
+After identifying the best model, it is packaged into a Docker container.
+USER → FastAPI:
+
+Users interact with the FastAPI endpoint to query the deployed model.
+
 ### Question 30
 
 > **Discuss the overall struggles of the project. Where did you spend most time and what did you do to overcome these**
@@ -632,7 +664,7 @@ No, we ran into many technical issues while making sure that the code ran on all
 
 Throughout this project, we faced several challenges that taught us a lot and helped improve our approach moving forward.
 
-One of the first difficulties we ran into was with managing dependencies. One team member was working on an older MacBook, and it turned out that the latest version of PyTorch wasn’t compatible with their system. This created some issues when trying to set up the environment. We spent time troubleshooting and eventually resolved it by downgrading to a version of PyTorch that worked better with older systems. This situation made us realize just how important it is to manage dependencies carefully and make sure everyone is working with the right versions, especially when different team members might have different hardware setups. Another challenge came up when we were setting up Docker for local testing. We initially struggled with getting the Docker container to work properly. Specifically, we ran into issues with file paths and environment variables that prevented the container from behaving the same way it did on our local machines. After some trial and error, and looking into things like relative imports and how Docker handles file systems, we were able to get it working. This was a good reminder of how important it is to understand the underlying system when working with containers, and how small mistakes in configuration can have a big impact. Deploying the API to the cloud was another hurdle. We faced an error that said the port couldn’t be found, which was confusing at first. We had to dig deeper into cloud deployment practices and troubleshoot the configuration. We were not able to get it working even when employing the hints from the course module regarding this issue. This experience showed us how important it is to understand the specifics of the environment you're working in. Sometimes things work in one environment, but when you move to the cloud, different rules or configurations can cause unexpected issues. Overall, this project was a valuable learning experience. It taught us a lot about best practices for version control, dependency management, and cloud deployment. Even though the project wasn’t huge, it helped us develop good habits and showed us the importance of staying organized and focused on creating clean, reliable code. Each challenge was a chance to improve our skills and problem-solving abilities, and we’re confident it will help us in future projects.
+One of the first difficulties we ran into was with managing dependencies. One team member was working on an older MacBook, and it turned out that the latest version of PyTorch wasn’t compatible with their system. This created some issues when trying to set up the environment. We spent time troubleshooting and eventually resolved it by downgrading to a version of PyTorch that worked better with older systems. This situation made us realize just how important it is to manage dependencies carefully and make sure everyone is working with the right versions, especially when different team members might have different hardware setups. Another challenge came up when we were setting up Docker for local testing. We initially struggled with getting the Docker container to work properly. Specifically, we ran into issues with file paths and environment variables that prevented the container from behaving the same way it did on our local machines. After some trial and error, and looking into things like relative imports and how Docker handles file systems, we were able to get it working. This was a good reminder of how important it is to understand the underlying system when working with containers, and how small mistakes in configuration can have a big impact. Deploying the API to the cloud was another hurdle. We faced an error that said the port couldn’t be found, which was confusing at first. We had to dig deeper into cloud deployment practices and troubleshoot the configuration. We were able to get it working by fixing a problem with weights and biases. This experience showed us how important it is to understand the specifics of the environment you're working in. Sometimes things work in one environment, but when you move to the cloud, different rules or configurations can cause unexpected issues. Overall, this project was a valuable learning experience. It taught us a lot about best practices for version control, dependency management, and cloud deployment. Even though the project wasn’t huge, it helped us develop good habits and showed us the importance of staying organized and focused on creating clean, reliable code. Each challenge was a chance to improve our skills and problem-solving abilities, and we’re confident it will help us in future projects.
 
 ### Question 31
 
@@ -642,12 +674,12 @@ One of the first difficulties we ran into was with managing dependencies. One te
 >
 > Recommended answer length: 50-300 words.
 >
-> Example:
-> *Student sXXXXXX was in charge of developing of setting up the initial cookie cutter project and developing of the*
-> *docker containers for training our applications.*
-> *Student sXXXXXX was in charge of training our models in the cloud and deploying them afterwards.*
-> *All members contributed to code by...*
-> *We have used ChatGPT to help debug our code. Additionally, we used GitHub Copilot to help write some of our code.*
+
 > Answer:
 
---- question 31 fill here ---
+> *Student s232946 served as a facilitator keeping everyone on the same page and delegating tasks as well as building big parts of the fundamental system. Worked hard to get the API running on the cloud despite many issues. Created and adminstered docker files and artifact registry.
+> *Student s233500 specifically worked on unit tests for the data module and creating the base model + training procedure*
+> *Student s233128 worked mainly on linting, ensuring pep-8 compliance and implementing typing in original code. Also contributed to documentation throughout the project*
+> *Student s234065 was the main person responsible the unit testing of the models, ensuring that they rain correctly and had correct input output dimensions etc. Also implemented the Fast Api code for calling the model through get requests.
+> *Student s233148 mainly worked on monitoring and measuring the experiments carried out using weights and biases as well as setting up the entire dvc pipeline to pull the data from google cloud. Was in charge of training the model through the cloud.
+> All members contributed to having a combined overview of the project as it grew and ensuring correct version control
