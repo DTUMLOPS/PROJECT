@@ -1,8 +1,6 @@
 """
-interface.py
-
-Core inference module for the DSSM model. 
-This file includes utilities for loading models, validating input data, and performing predictions. 
+Core inference module for the DSSM model.
+This file includes utilities for loading models, validating input data, and performing predictions.
 """
 
 import logging
@@ -25,11 +23,12 @@ logger = logging.getLogger(__name__)
 class InferenceInput:
     """
     Data class for validating and storing inference input data.
-    
+
     Attributes:
         temporal_data (np.ndarray): Time-series data for inference.
         static_data (np.ndarray): Static features for inference.
     """
+
     temporal_data: np.ndarray
     static_data: np.ndarray
 
@@ -68,11 +67,12 @@ class InferenceInput:
 class InferenceOutput:
     """
     Data class for structured inference output.
-    
+
     Attributes:
         probabilities (np.ndarray): Class probabilities for predictions.
         predicted_classes (np.ndarray): Predicted class labels.
     """
+
     probabilities: np.ndarray
     predicted_classes: np.ndarray
 
@@ -131,6 +131,7 @@ class ModelManager:
     """
     Handles model loading and management.
     """
+
     def __init__(self):
         self._models: Dict[str, DSSMLightning] = {}
 
@@ -178,6 +179,7 @@ class InferenceEngine:
     """
     Inference engine for processing input data and generating predictions.
     """
+
     def __init__(self, use_gpu: bool = False):
         self.device = torch.device("cuda" if use_gpu and torch.cuda.is_available() else "cpu")
         self.model_manager = ModelManager()
@@ -256,7 +258,7 @@ class InferenceEngine:
 def main(cfg: DictConfig) -> None:
     """
     Main entry point for testing the inference engine.
-    """    
+    """
     logger.info("\nConfiguration:")
     logger.info(OmegaConf.to_yaml(cfg))
 

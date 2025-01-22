@@ -1,0 +1,50 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/Dockerfile
+      target: api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./models:/models
+      - ./src:/src  # For hot reload
+    environment:
+      - MODEL_PATH=/models
+      - PYTHONUNBUFFERED=1
+
+  train:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile
+      target: train
+    volumes:
+      - ./data:/data
+      - ./models:/models
+    environment:
+      - MODEL_PATH=/models
+      - DATA_PATH=/data
+
+  evaluate:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile
+      target: evaluate
+    volumes:
+      - ./data:/data
+      - ./models:/models
+    environment:
+      - MODEL_PATH=/models
+      - DATA_PATH=/data
+
+  infer:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile
+      target: infer
+    volumes:
+      - ./data:/data
+      - ./models:/models
+    environment:
+      - MODEL_PATH=/models
+      - DATA_PATH=/data

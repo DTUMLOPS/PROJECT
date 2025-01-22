@@ -1,7 +1,5 @@
 """
-model.py
-
-This file defines the neural network components and the main model architecture 
+This file defines the neural network components and the main model architecture
 used for classification tasks in the DSSM model.
 """
 
@@ -12,13 +10,12 @@ import torchmetrics
 from typing import Optional, Union
 
 
-
 class DSSMLightning(pl.LightningModule):
     """
     DSSM implementation using PyTorch Lightning.
     This model is designed for classification tasks using both temporal and static input data.
     """
-        
+
     def __init__(
         self,
         input_size: int,
@@ -101,10 +98,7 @@ class DSSMLightning(pl.LightningModule):
         optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)
         return optimizer
 
-    def _shared_step(self, batch: tuple, batch_idx: int):
-        """
-        Shared logic for training, validation, and test steps.
-        """
+    def _shared_step(self, batch, batch_idx):
         temporal_data, static_data, labels, seq_lengths = batch
         outputs = self(temporal_data, static_data, seq_lengths)  # Shape: [batch_size, 2]
         loss = self.criterion(outputs, labels)
@@ -151,7 +145,7 @@ class DSSMLightning(pl.LightningModule):
         self.log("val_auprc", self.auprc, on_epoch=True)
         return loss
 
-    def test_step(self, batch: tuple, batch_idx: int) :
+    def test_step(self, batch: tuple, batch_idx: int):
         """
         Test step logic.
         """
@@ -205,14 +199,10 @@ class TemporalEncoder(nn.Module):
         )
 
         self.attention = nn.MultiheadAttention(
-            embed_dim=hidden_size * (2 if bidirectional else 1), 
-            num_heads=4, 
-            dropout=dropout_rate
+            embed_dim=hidden_size * (2 if bidirectional else 1), num_heads=4, dropout=dropout_rate
         )
 
-    def forward(
-        self, temporal_data: torch.Tensor, seq_lengths: torch.Tensor
-    ) -> torch.Tensor:
+    def forward(self, temporal_data: torch.Tensor, seq_lengths: torch.Tensor) -> torch.Tensor:
         """
         Forward pass for TemporalEncoder.
 
@@ -269,10 +259,7 @@ class StaticEncoder(nn.Module):
         super(StaticEncoder, self).__init__()
 
         self.network = nn.Sequential(
-            nn.Linear(input_size, hidden_size), 
-            nn.ReLU(), 
-            nn.Dropout(dropout_rate), 
-            nn.Linear(hidden_size, hidden_size)
+            nn.Linear(input_size, hidden_size), nn.ReLU(), nn.Dropout(dropout_rate), nn.Linear(hidden_size, hidden_size)
         )
 
     def forward(self, static_data: torch.Tensor) -> torch.Tensor:
@@ -331,4 +318,3 @@ class Classifier(nn.Module):
         Forward pass for Classifier.
         """
         return self.network(x)
-    

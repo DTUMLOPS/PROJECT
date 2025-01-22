@@ -1,12 +1,9 @@
 """
-train.py 
-
 This file trains the DSSM and supports cross-validation over multiple data splits.
 """
 
 import logging
 from pathlib import Path
-from typing import List, Dict, Optional
 
 import numpy as np
 import hydra
@@ -75,7 +72,7 @@ def train_single_split(cfg: DictConfig, split_number: int) -> dict:
     return test_results[0]
 
 
-def print_results(results: dict, split_number: int = None)-> None:
+def print_results(results: dict, split_number: int = None) -> None:
     """
     Print formatted results for a specific split or overall results.
     """

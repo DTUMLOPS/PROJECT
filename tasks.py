@@ -1,5 +1,4 @@
 import os
-
 from invoke import Context, task
 
 WINDOWS = os.name == "nt"
@@ -41,7 +40,7 @@ def train(ctx: Context) -> None:
 
 @task
 def evaluate(ctx: Context) -> None:
-    """Train model."""
+    """Evaluate model."""
     ctx.run(f"python src/{PROJECT_NAME}/evaluate.py", echo=True, pty=not WINDOWS)
 
 
@@ -60,14 +59,9 @@ def test(ctx: Context) -> None:
 
 @task
 def docker_build(ctx: Context, progress: str = "plain") -> None:
-    """Build docker images."""
+    """Build all docker images."""
     ctx.run(
-        f"docker build -t train_ehr:latest . -f dockerfiles/train.dockerfile --progress={progress}",
-        echo=True,
-        pty=not WINDOWS,
-    )
-    ctx.run(
-        f"docker build -t evaluate_ehr:latest . -f dockerfiles/evaluate.dockerfile --progress={progress}",
+        f"docker compose build --progress={progress}",
         echo=True,
         pty=not WINDOWS,
     )
@@ -76,10 +70,55 @@ def docker_build(ctx: Context, progress: str = "plain") -> None:
 @task(docker_build)
 def docker_train(ctx: Context) -> None:
     """Run training in Docker container."""
-    ctx.run("docker run --rm train_ehr:latest", echo=True, pty=not WINDOWS)
+    ctx.run(
+        "docker compose run --rm train",
+        echo=True,
+        pty=not WINDOWS,
+    )
 
 
 @task(docker_build)
 def docker_evaluate(ctx: Context) -> None:
     """Run evaluation in Docker container."""
-    ctx.run("docker run --rm evaluate_ehr:latest", echo=True, pty=not WINDOWS)
+    ctx.run(
+        "docker compose run --rm evaluate",
+        echo=True,
+        pty=not WINDOWS,
+    )
+
+
+@task(docker_build)
+def docker_infer(ctx: Context) -> None:
+    """Run inference in Docker container."""
+    ctx.run(
+        "docker compose run --rm infer",
+        echo=True,
+        pty=not WINDOWS,
+    )
+
+
+@task(docker_build)
+def docker_api(ctx: Context) -> None:
+    """Run API server in Docker container."""
+    ctx.run(
+        "docker compose up api",
+        echo=True,
+        pty=not WINDOWS,
+    )
+
+
+@task
+def docker_down(ctx: Context) -> None:
+    """Stop all docker containers."""
+    ctx.run(
+        "docker compose down",
+        echo=True,
+        pty=not WINDOWS,
+    )
+
+
+@task
+def format_code(ctx: Context) -> None:
+    """Format and check code style."""
+    ctx.run("ruff format . --check", echo=True, pty=not WINDOWS)
+    ctx.run("ruff check .", echo=True, pty=not WINDOWS)

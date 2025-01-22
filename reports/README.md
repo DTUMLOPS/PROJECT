@@ -215,7 +215,7 @@ Furthermore, we made adjustments to include tools such as ruff for linting and c
 
 Yes, we implemented several measures to ensure code quality and maintainability. All files in the src/ehr_classification folder have type annotations, which make the code more predictable and easier to debug. Following PEP8 standards, we adhered to conventions such as using CapWords for class names and snake_case for methods and variables. Documentation was also a priority. At the beginning of each file, we included a brief description of its purpose, and every class and method has accompanying docstrings. For methods that are particularly complex or critical, we documented their inputs, outputs, simpler methods are described with concise summaries of their functionality.
 
-These practices are very important in larger projects because they keep the codebase clear, organized, and easier to work with. They help the whole team stay on the same page, making it simpler to collaborate and avoid mistakes. Clear typing, consistent formatting, and good documentation save time and reduce confusion, especially when bringing new team members on board. Plus, they make sure the code is easy to update and grow as the project develops. 
+These practices are very important in larger projects because they keep the codebase clear, organized, and easier to work with. They help the whole team stay on the same page, making it simpler to collaborate and avoid mistakes. Clear typing, consistent formatting, and good documentation save time and reduce confusion, especially when bringing new team members on board. Plus, they make sure the code is easy to update and grow as the project develops.
 
 
 ## Version control
@@ -240,12 +240,12 @@ We implemented 35 tests across two main categories: data module and model-relate
 Dataloader Tests (7):
 Validate the DataLoader instance, batch size, shapes of ts_values, static, labels, lengths, and padding for shorter sequences.
 
-Dataset Tests (6):  
+Dataset Tests (6):
 Ensure dataset length matches batch_size and verify shapes of (ts_values, static, labels, lengths).
 
-Model Tests (22):  
-Core Model Tests (8): Check forward pass, optimizer configuration, and loss metrics.  
-Submodule Tests (8): Validate StaticEncoder, StateTransition, and Classifier outputs and error handling.  
+Model Tests (22):
+Core Model Tests (8): Check forward pass, optimizer configuration, and loss metrics.
+Submodule Tests (8): Validate StaticEncoder, StateTransition, and Classifier outputs and error handling.
 Edge Case Tests (6): Handle mismatched dimensions, missing class weights, and incorrect inputs.
 
 ### Question 8
@@ -386,7 +386,7 @@ We used config files for reproducibility and to avoid losing information during 
 >
 > Answer:
 
-We applied Docker on the various activities, like training, evaluation, and inference tasks. It gives consistency and reproducibility of any given project with regard to a variety of different environments. It includes train.dockerfile, evaluate.dockerfile, infer.dockerfile where each one depends upon and configured its requirement; Dockerfiles automatically give a built-in option with environment discrepancy consideration while creating separate containers for different activities. 
+We applied Docker on the various activities, like training, evaluation, and inference tasks. It gives consistency and reproducibility of any given project with regard to a variety of different environments. It includes train.dockerfile, evaluate.dockerfile, infer.dockerfile where each one depends upon and configured its requirement; Dockerfiles automatically give a built-in option with environment discrepancy consideration while creating separate containers for different activities.
 
 TO run: docker build -t project_name -f train.dockerfile . This ensures that the required directories (data, models, configs) are mounted correctly into the container, and the task runs as expected.
 
@@ -501,7 +501,11 @@ Google Cloud Storage (GCS): For storing and managing datasets and model files se
 >
 > Answer:
 
---- question 23 fill here ---
+We built an API for our model using FastAPI. The API initializes the model during startup using the lifespan function. This setup includes finding the best model checkpoint with the find_checkpoint utility and loading it into memory using our InferenceEngine.
+
+The main feature of the API is the /predict endpoint. While the current implementation uses random data as input, it’s designed to accept real temporal and static data in JSON format. The inputs are validated using Pydantic models, which also define the structure of the output. The endpoint returns predicted probabilities, predicted classes, and an interpretation of the results.
+
+FastAPI makes the API easy to use, and it generates automatic documentation for testing. We also added error handling to catch issues like the model not being loaded or invalid inputs, ensuring the API is reliable and user-friendly. This setup allows for easy extension and deployment.
 
 ### Question 24
 

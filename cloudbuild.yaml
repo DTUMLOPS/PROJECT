@@ -1,0 +1,84 @@
+steps:
+# Build and push all images using target flags
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Build training image'
+  args: [
+    'build',
+    '.',
+    '-t',
+    'europe-west1-docker.pkg.dev/$PROJECT_ID/group-30-container-registry/train-ehr',
+    '-f',
+    'dockerfiles/Dockerfile',
+    '--target',
+    'train'
+  ]
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Push training image'
+  args: [
+    'push',
+    'europe-west1-docker.pkg.dev/$PROJECT_ID/group-30-container-registry/train-ehr'
+  ]
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Build evaluation image'
+  args: [
+    'build',
+    '.',
+    '-t',
+    'europe-west1-docker.pkg.dev/$PROJECT_ID/group-30-container-registry/evaluate-ehr',
+    '-f',
+    'dockerfiles/Dockerfile',
+    '--target',
+    'evaluate'
+  ]
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Push evaluation image'
+  args: [
+    'push',
+    'europe-west1-docker.pkg.dev/$PROJECT_ID/group-30-container-registry/evaluate-ehr'
+  ]
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Build inference image'
+  args: [
+    'build',
+    '.',
+    '-t',
+    'europe-west1-docker.pkg.dev/$PROJECT_ID/group-30-container-registry/infer-ehr',
+    '-f',
+    'dockerfiles/Dockerfile',
+    '--target',
+    'infer'
+  ]
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Push inference image'
+  args: [
+    'push',
+    'europe-west1-docker.pkg.dev/$PROJECT_ID/group-30-container-registry/infer-ehr'
+  ]
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Build API image'
+  args: [
+    'build',
+    '.',
+    '-t',
+    'europe-west1-docker.pkg.dev/$PROJECT_ID/group-30-container-registry/api-ehr',
+    '-f',
+    'dockerfiles/Dockerfile',
+    '--target',
+    'api'
+  ]
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Push API image'
+  args: [
+    'push',
+    'europe-west1-docker.pkg.dev/$PROJECT_ID/group-30-container-registry/api-ehr'
+  ]
+
+options:
+  logging: CLOUD_LOGGING_ONLY
