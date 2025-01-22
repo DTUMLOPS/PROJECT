@@ -135,7 +135,7 @@ def train(cfg: DictConfig) -> None:
     wandb.login(key="862cb3811297e61bdd4495300bb45c4a321e6004")
 
     # initialise the wandb logger and name your wandb project
-    wandb_logger = WandbLogger(project='dtumlops', log_model=True)
+    wandb_logger = WandbLogger(project='dtumlops', checkpoint_name="ehr_classification", log_model=True)
 
     # add your batch size to the wandb config
     wandb_logger.experiment.config["batch_size"] = cfg.training.batch_size

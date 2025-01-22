@@ -330,12 +330,12 @@ class Classifier(nn.Module):
 class SaveModelAsArtifact(pl.LightningModule):
     def on_train_end(self):
         # Save the checkpoint
-        artifact_path = "./checkpoints/best_model.ckpt"
+        artifact_path = self.trainer.checkpoint_callback.best_model_path
         wandb.save(artifact_path)
         
         # Log the artifact to W&B
         artifact = wandb.Artifact(
-            name="your_model_artifact_name",
+            name="ehr_classification",
             type="model",
         )
         artifact.add_file(artifact_path)

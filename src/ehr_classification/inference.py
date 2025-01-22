@@ -12,6 +12,7 @@ import torch
 import numpy as np
 import hydra
 from omegaconf import DictConfig, OmegaConf
+import wandb
 
 from ehr_classification.model import DSSMLightning
 from ehr_classification.evaluate import find_checkpoint
@@ -262,19 +263,22 @@ def main(cfg: DictConfig) -> None:
     logger.info("\nConfiguration:")
     logger.info(OmegaConf.to_yaml(cfg))
 
-    # Find checkpoint path
-    if cfg.evaluation.checkpoint_path:
-        checkpoint_path = cfg.evaluation.checkpoint_path
-    else:
-        checkpoint_path = find_checkpoint(
-            Path(cfg.paths.model_dir),
-            cfg.data.split_number,
-            mode=cfg.evaluation.get("mode", "random"),
-        )
+    # Initialize wandb
+    wandb.init(project="dtumlops", entity="alexcomas")
+
+    # Login to wandb
+    wandb.login(key="862cb3811297e61bdd4495300bb45c4a321e6004")
+
+    # Use the artifact API to download the file
+    artifact = wandb.use_artifact('alexcomas/dtumlops/ehr_classification:latest', type='model')
+    artifact_dir = artifact.download()
+
+    # Load the model checkpoint
+    model_path = f"{artifact_dir}/best_model.ckpt"
 
     # Initialize inference engine
     engine = InferenceEngine(use_gpu=cfg.training.use_gpu)
-    engine.load_model(checkpoint_path)
+    engine.load_model(model_path)
 
     # Example data
     temporal_data = np.random.rand(10, 37)  # [sequence_length, num_features]
