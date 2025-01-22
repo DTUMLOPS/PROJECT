@@ -8,7 +8,7 @@ steps:
     '-t',
     'europe-west1-docker.pkg.dev/$PROJECT_ID/group-30-container-registry/train-ehr',
     '-f',
-    'dockerfiles/Dockerfile',
+    'Dockerfile',
     '--target',
     'train'
   ]
@@ -28,7 +28,7 @@ steps:
     '-t',
     'europe-west1-docker.pkg.dev/$PROJECT_ID/group-30-container-registry/evaluate-ehr',
     '-f',
-    'dockerfiles/Dockerfile',
+    'Dockerfile',
     '--target',
     'evaluate'
   ]
@@ -48,7 +48,7 @@ steps:
     '-t',
     'europe-west1-docker.pkg.dev/$PROJECT_ID/group-30-container-registry/infer-ehr',
     '-f',
-    'dockerfiles/Dockerfile',
+    'Dockerfile',
     '--target',
     'infer'
   ]
@@ -68,7 +68,7 @@ steps:
     '-t',
     'europe-west1-docker.pkg.dev/$PROJECT_ID/group-30-container-registry/api-ehr',
     '-f',
-    'dockerfiles/Dockerfile',
+    'Dockerfile',
     '--target',
     'api'
   ]
