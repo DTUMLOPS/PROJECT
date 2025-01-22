@@ -29,7 +29,11 @@ RUN pip install . --no-deps --no-cache-dir
 
 # API stage
 FROM base AS api
+<<<<<<< HEAD
+COPY models/ models/
+=======
 RUN mkdir -p /root/.cache/wandb
+>>>>>>> db510a6f41bf23ce11826021525903cf29985cda
 EXPOSE 8080
 ENTRYPOINT ["uvicorn", "ehr_classification.api:app", "--host", "0.0.0.0", "--port", "8080"]
 
