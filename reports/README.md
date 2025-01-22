@@ -611,6 +611,8 @@ No, we ran into many technical issues while making sure that the code ran on all
 >
 > Recommended answer length: 200-400 words
 >
+> ![this figure](figures/diagram.jpeg)
+>
 > Example:
 >
 > *The starting point of the diagram is our local setup, where we integrated ... and ... and ... into our code.*
