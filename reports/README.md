@@ -146,7 +146,7 @@ For our project, we chose to work with PyTorch Lightning, a third-party framewor
 Our DSSMLightning class demonstrates how the framework streamlined our development by providing a clean, organized structure where we could focus on the key components of our model. For instance, instead of writing complex training loops, we just defined methods like training_step and validation_step where we specified what should happen in each phase. The framework automatically handled all the training machinery.
 The ease with which professional-grade features were implemented, such as metric tracking-we used metrics in-built for accuracy, AUROC, and AUPRC without implementing these calculations ourselves-is a fact. In the code below, one can quickly note how easily we tracked and monitored these metrics during training using the self.log() calls.
 The framework saved us significant development time by automatically handling technical aspects like optimizer configuration (configure_optimizers method) and GPU training, allowing us to focus on improving our model's architecture rather than dealing with infrastructure code.
-Overall, PyTorch Lightning proved to be an excellent choice as it helped us write more maintainable, professional-grade code while reducing the potential for bugs in the training infrastructure.
+Overall, PyTorch Lightning proved to be an excellent choice as it helped us write more maintainable code while reducing the potential for bugs.
 
 ## Coding environment
 
@@ -166,20 +166,37 @@ Overall, PyTorch Lightning proved to be an excellent choice as it helped us writ
 >
 > Answer:
 
-We used pip and pyproject.toml for managing our dependencies. The list of dependencies was auto-generated using pip freeze. To get a complete copy of our development environment, one would have to run the following commands:
+We used pip and pyproject.toml for managing our dependencies. The list of dependencies was auto-generated using pip freeze.
+The project uses a comprehensive dependency management approach with multiple layers:
+
+1. Core project setup is managed through `pyproject.toml`, which defines the project metadata and uses setuptools as the build backend. Dependencies are dynamically specified through separate requirements files.
+2. Dependencies are split into two files:
+- `requirements.txt`: Contains core dependencies like PyTorch, PyTorch Lightning, FastAPI, and other production requirements
+- `requirements_dev.txt`: Contains development dependencies like pytest, coverage, ruff for linting, and mkdocs for documentation
+3. The project uses `invoke` tasks (defined in `tasks.py`) for environment setup. A new team member would follow these steps:
+
+```bash
+# Initial setup
 pip install invoke
-invoke create-environment
+
+# Create new conda environment
+invoke create-environment  # Creates conda env 'ehr_classification' with Python 3.12
+
+# Activate environment
 conda activate ehr_classification
-invoke requirements
-invoke dev-requirements
 
-This will set up the environment with all necessary packages including:
-
-Core ML libraries: PyTorch, PyTorch Lightning, torchmetrics
-Configuration management: hydra-core, omegaconf
-Development tools: pytest, ruff, mypy, pre-commit
-Documentation: mkdocs with material theme
-
+# Install all dependencies
+invoke dev-requirements  # This includes requirements.txt as a dependency
+```
+Additional setup required for DVC (data version control):
+```bash
+pip install dvc-gs
+gcloud init
+gcloud auth login
+gcloud auth application-default login
+gcloud config set project dtumlops-447914
+dvc pull
+```
 ### Question 5
 
 > **We expect that you initialized your project using the cookiecutter template. Explain the overall structure of your**
@@ -295,7 +312,10 @@ Yes, our workflow included using branches and pull requests. Each team member wo
 >
 > Answer:
 
-Yes, we used DVC in our project, though it doesn't bring many benefits for versioning control since our data doesn't change in the project. We mostly used it to challenge ourselves to get hands-on experience with DVC. However, it would be a very big help in projects that undergo constant updates of the data or in large datasets to track different versions. In such cases, DVC aids in managing changes in the data, reproducibility, and consistency between different versions of the dataset to make it easier to collaborate and handle large-scale data processing.
+Yes, we used DVC in our project, though it doesn't bring many benefits for versioning control since our data doesn't change in the project.
+We mostly used it to challenge ourselves to get hands-on experience with DVC and have a place to pull and store the data, it works well with GCP Bucket.
+However, it would be a very big help in projects that undergo constant updates of the data or in large datasets to track different versions.
+In such cases, DVC aids in managing changes in the data, reproducibility, and consistency between different versions of the dataset to make it easier to collaborate and handle large-scale data processing.
 
 ### Question 11
 
@@ -312,15 +332,31 @@ Yes, we used DVC in our project, though it doesn't bring many benefits for versi
 >
 > Answer:
 
-In our continuous integration setup, we focus on linting and testing to ensure code quality and correctness:
+Our continuous integration setup is organized into three main workflows:
 
-Linting: We use Ruff version 0.9.1 for linting. Ruff is a fast Python linter that checks the code for style violations and potential errors, helping us work within PEP 8 standards and maintain clean, readable code.
+1. **Linting (.github/workflows/lint.yaml)**:
+   - Uses Ruff version 0.9.1 for fast Python linting
+   - Enforces PEP 8 standards and code style consistency
+   - Line length is configured to 120 characters as specified in pyproject.toml
 
-Testing is done using the pytest version of 7.4.3, which supports the writing and executing unit tests in the most efficient ways. It ensures detailed reports while checking that any component of code works as anticipated. We measure code coverage for our code base by using the coverage so we can identify how much of it is not appropriately tested.
+2. **Testing (.github/workflows/tests.yaml)**:
+   - Runs pytest (version 7.4.3) for unit testing
+   - Uses coverage (version 7.6.9) to track test coverage
+   - Tests are organized in the tests/ directory covering api, data, and model components
 
-Multiple Operating Systems: Our CI pipeline is configured to test on multiple operating systems (e.g., Linux, macOS) to ensure cross-platform compatibility. This helps us identify platform-specific issues early in the development process.
+3. **Docker Builds (.github/workflows/docker.yaml & cloudbuild.yaml)**:
+   - Automated building and testing of Docker containers
+   - Builds multiple targeted images:
+     * Training image (train-ehr)
+     * Evaluation image (evaluate-ehr)
+     * Inference image (infer-ehr)
+     * API service image (api-ehr)
+   - Uses Google Cloud Build for container registry deployment
+   - Pushes to europe-west1-docker.pkg.dev registry
 
-By integrating linting, testing, and cross-platform support, we ensure that our code is clean, well-tested, and works seamlessly across different environments.
+The Docker workflow is particularly comprehensive, building separate containers for each component of our ML pipeline. Our cloudbuild.yaml demonstrates the multi-stage build process, using target flags to create specialized containers for each part of the workflow (training, evaluation, inference, and API serving).
+
+Additionally, we use pre-commit hooks (version >=3.5.0) to catch issues before code is committed, and dependabot (configured in .github/dependabot.yaml) to keep our dependencies updated. This comprehensive CI pipeline ensures our code is well-tested, properly formatted, and deployable across our containerized infrastructure.
 
 ## Running code and tracking experiments
 
@@ -339,7 +375,10 @@ By integrating linting, testing, and cross-platform support, we ensure that our 
 >
 > Answer:
 
-For configuration management of train.yaml and evaluate.yaml files used for the operation of our experiment, we rely on Hydra for that purpose. YAML files hold information like the path and configuration settings that specify whether the experiment uses a train with a specific configuration for parameters: batch size and learning rate epochs. For example, in order to run the training experiment, we just have to mention a configuration file overriding the parameters through command-line that we need for a particular experiment, batch size, or data split. Using Hydra, several configurations of experiments can be maintained and run rather efficiently, applying all the different settings.
+For configuration management of train.yaml and evaluate.yaml files used for the operation of our experiment, we rely on Hydra for that purpose.
+YAML files hold information like the path and configuration settings that specify whether the experiment uses a train with a specific configuration for parameters: batch size and learning rate epochs.
+In order to run the training experiment, we just have to mention a configuration file overriding the parameters through command-line that we need for a particular experiment or data split.
+Using Hydra, several configurations of experiments can be maintained and run rather efficiently, applying all the different settings.
 
 ### Question 13
 
@@ -354,7 +393,10 @@ For configuration management of train.yaml and evaluate.yaml files used for the 
 >
 > Answer:
 
-We used config files for reproducibility and to avoid losing information during experiments. Hydra does this by creating, at the time of running an experiment, a unique directory according to the timestamp and parameters of the experiment-split, batch size, etc.-containing logs, model checkpoints, and outputs. By doing so, all the details of a given experiment, like exact configuration, are stored in the run directory. To reproduce the experiment, a user would simply need to replicate the same configuration file and parameters in order for the environment and settings to exactly match, achieving reproducibility.
+We used Hydra compatible config files for reproducibility in order to avoid losing information during experiments and keep them easily adjustable.
+Hydra does this by creating, at the time of running an experiment, a unique directory according to the timestamp and parameters of the experiment-split, batch size, etc.-containing logs, model checkpoints, and outputs.
+By doing so, all the details of a given experiment, like exact configuration, are stored in the run directory.
+To reproduce the experiment, a user would simply need to replicate the same configuration file and parameters in order for the environment and settings to exactly match, achieving reproducibility.
 
 ### Question 14
 
@@ -372,8 +414,9 @@ We used config files for reproducibility and to avoid losing information during 
 > Answer:
 
 ![alt text](figures/wandb.png)
-
-In this image we can see various metrics recorded during our training. As we can see, we focus more on the validation metrics, since there we can really see the model evolution. In this particular project, we value differently the true positives and true negatives, so we include metrics as AUROC and AUPRC, besides the usual metrics like loss and accuracy.
+In this image we can see various metrics recorded during our training. As we can see, we focus more on the validation metrics, since there we can really see the model evolution.
+In this particular project, we value differently the true positives and true negatives, so we include metrics as AUROC and AUPRC, besides the usual metrics like loss and accuracy.
+These metrics help us understand the model's performance in distinguishing between classes and its ability to handle imbalanced datasets. By tracking these metrics, we can make informed decisions about model improvements and ensure it meets our performance criteria.
 
 W&B project repo - https://wandb.ai/alexcomas/dtumlops
 
@@ -458,8 +501,11 @@ We used the following services:
 >
 > Answer:
 
-We used the compute engine to run our training for the model. We used instances with the following hardware:
-e2-medium (2 vCPU, 1 core, 4 GB memory). It worked, but due to the low specs of this VM we ended up training with a member's PC .We are aware that there's GPU accelerated VMs as well, but the costs were too high and threatened to spend all the credits very quickly.
+We used the Compute Engine to run our model training. We initially selected instances with the following hardware specifications: e2-medium (2 vCPU, 1 core, 4 GB memory).
+While this setup allowed us to perform basic training tasks, we quickly realized that the limited resources of this VM were insufficient for our more demanding training requirements.
+We decided to switch to a team member's PC for more efficient training.
+Although we were aware of the availability of GPU-accelerated VMs, the associated costs would have exhausted our credits faster than we would like them to.
+This experience highlighted the importance of selecting appropriate hardware resources for machine learning tasks and balancing cost considerations with performance needs.
 
 ### Question 19
 
@@ -503,9 +549,10 @@ e2-medium (2 vCPU, 1 core, 4 GB memory). It worked, but due to the low specs of 
 >
 > Answer:
 
-We managed to train the model in the cloud, but, as explained in question 18, due to the low specs of this VM we ended up training with a member's PC .We are aware that there's GPU accelerated VMs as well, but the costs were too high and threatened to spend all the credits very quickly.
-
-We managed to do it by simply logging into the VM via SSH and using it as we would for any other PC.
+We managed to train the model in the cloud, but, as explained in question 18, due to the low specs of this VM we ended up training with a member's PC.
+We are aware that there's GPU accelerated VMs as well, but the costs were too high and threatened to spend all the credits very quickly.
+We managed to do it by simply logging into a deployed virtual machine in GCP via SSH and using it as we would for any other PC.
+This experience highlighted the importance of balancing cost and performance when selecting cloud resources for machine learning tasks.
 
 
 ## Deployment
@@ -543,7 +590,11 @@ FastAPI makes the API easy to use, and it generates automatic documentation for 
 >
 > Answer:
 
-Yes we managed to deploy our API to google cloud run. We had serios issues doing this, and it was difficult to debug because each push to google cloud would take around 7 minutes to update. In the end we found that it was a proble with weights and biases, that did not correctly call the init function. Again a textbook example of something working locally but not in the cloud. Finally we got the link pushed for our api and everyone could use it by going to link/predict
+Yes we managed to deploy our API to google cloud run.
+We had a couple of issues doing this, and it was difficult to debug because each new container build and future upload to google cloud artifact registry would take around 8 minutes to update.
+In the end we found that it was a problem with weights and biases, that did not correctly call the init function, and it required our teammate W&B secret stored in the GCP to make it work.
+Again a textbook example of something working locally but not in the cloud.
+Finally, we got the link pushed for our api and everyone could use it by going to link/predict with the cost of not being able to run the stuff locally without Alex's W&B secret.
 
 ### Question 25
 
@@ -591,10 +642,13 @@ Yes, we set up monitoring in Google Cloud to track how long API calls take and h
 >
 > Answer:
 
-The most expensive part of the project was the use of the compute engine (for training), this ended up costing us 5.97 dollars. Luckily this cost was covered by DTU. The rest of the costs were negligible, coming out at a total of around 6.50 USD. See the figure below:
+The most expensive part of our project was utilizing the compute engine for model training, which accounted for 5.97 dollar of our total costs. This significant expense was primarily due to the computational resources required for training our models. Fortunately, these costs were covered by DTU. The remaining services, including storage and API calls, were relatively inexpensive, bringing our total project expenditure to approximately $6.50 USD.
+
+See the figure below:
 
 ![this figure](figures/cost.png)
 
+Working in the cloud presented both challenges and opportunities. Initially, there was a steep learning curve in understanding various services, managing credentials, and configuring resources correctly. However, the experience proved highly rewarding as it provided access to scalable computing resources, simplified deployment processes, and enabled efficient collaboration among team members. The cloud infrastructure's flexibility allowed us to experiment with different computational resources without being constrained by local hardware limitations. Despite the initial complexity, the skills gained in cloud computing are invaluable for future professional development in modern software engineering.
 
 ### Question 28
 
@@ -620,7 +674,7 @@ No, we ran into many technical issues while making sure that the code ran on all
 >
 > Recommended answer length: 200-400 words
 >
-> ![this figure](figures/diagram.jpeg)
+>
 >
 > Example:
 >
@@ -629,37 +683,19 @@ No, we ran into many technical issues while making sure that the code ran on all
 >
 > Answer:
 
-DEV → Local Machine:
+![this figure](figures/diagram.jpeg)
 
-Development starts locally with coding, pre-commit checks, and experiment tracking.
-Local Machine → GitHub:
+A developer begins work in their local machine, where they perform coding, run pre-commit checks, and conduct experiments. They manage their workflow in several parallel streams:
 
-Code is committed and pushed to GitHub for version control.
-Local Machine → DVC using Google Cloud:
+For code versioning, they push their code to GitHub, which triggers GitHub Actions. These actions automatically run tests, perform linting, conduct static analysis, validate the FastAPI application, and initiate containerization processes.
 
-Data and models are version-controlled using DVC, which stores large files (datasets, models) in Google Cloud.
-Local training or processing interacts with DVC for data management.
-Local Machine → FastAPI:
+For data and model management, they use DVC which interfaces with Google Cloud Storage for version control of large files like datasets and trained models. This allows efficient tracking of which data version was used for which experiment.
 
-After experimentation, the FastAPI app is developed and tested locally.
-GitHub → GitHub Actions:
+For experimentation, they use either Weights & Biases or Hydra (or both). W&B tracks experiments, visualizes results, logs metrics, and saves the model file, while Hydra manages configurations and handles hyperparameter tuning. The insights and optimal parameters from these tools inform the final model that gets containerized.
 
-Code push triggers GitHub Actions to:
-Run tests, linting, and static analysis.
-Validate the FastAPI app.
-Trigger containerization processes.
-FastAPI → Docker:
+The FastAPI application is first developed and tested locally. Once validated, it gets containerized using Docker for deployment. The containerization process packages not just the API code but also the best performing model identified through experimentation.
 
-The FastAPI app is containerized with Docker for deployment.
-Local Machine → W&B/Hydra:
-
-During experimentation, tools like Weights & Biases (W&B) or Hydra are used to track experiments and hyperparameter tuning.
-W&B/Hydra → Docker:
-
-After identifying the best model, it is packaged into a Docker container.
-USER → FastAPI:
-
-Users interact with the FastAPI endpoint to query the deployed model.
+Finally, end users interact with the deployed system by sending queries to the FastAPI endpoint, which serves predictions using the containerized model.
 
 ### Question 30
 
