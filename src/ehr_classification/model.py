@@ -98,10 +98,7 @@ class DSSMLightning(pl.LightningModule):
         optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)
         return optimizer
 
-    def _shared_step(self, batch: tuple, batch_idx: int):
-        """
-        Shared logic for training, validation, and test steps.
-        """
+    def _shared_step(self, batch, batch_idx):
         temporal_data, static_data, labels, seq_lengths = batch
         outputs = self(temporal_data, static_data, seq_lengths)  # Shape: [batch_size, 2]
         loss = self.criterion(outputs, labels)

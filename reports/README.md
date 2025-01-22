@@ -107,8 +107,8 @@ will check the repositories and the code to verify your answers.
 * [ ] Publish the documentation to GitHub Pages (M32)
 * [ ] Revisit your initial project description. Did the project turn out as you wanted?
 * [ ] Create an architectural diagram over your MLOps pipeline
-* [ ] Make sure all group members have an understanding about all parts of the project
-* [ ] Uploaded all your code to GitHub
+* [x] Make sure all group members have an understanding about all parts of the project
+* [x] Uploaded all your code to GitHub
 
 ## Group information
 
@@ -142,7 +142,11 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 3 fill here ---
+For our project, we chose to work with PyTorch Lightning, a third-party framework that significantly simplified our deep learning implementation. Looking at our code, Lightning helped us in several concrete ways:
+Our DSSMLightning class demonstrates how the framework streamlined our development by providing a clean, organized structure where we could focus on the key components of our model. For instance, instead of writing complex training loops, we just defined methods like training_step and validation_step where we specified what should happen in each phase. The framework automatically handled all the training machinery.
+The ease with which professional-grade features were implemented, such as metric tracking-we used metrics in-built for accuracy, AUROC, and AUPRC without implementing these calculations ourselves-is a fact. In the code below, one can quickly note how easily we tracked and monitored these metrics during training using the self.log() calls.
+The framework saved us significant development time by automatically handling technical aspects like optimizer configuration (configure_optimizers method) and GPU training, allowing us to focus on improving our model's architecture rather than dealing with infrastructure code.
+Overall, PyTorch Lightning proved to be an excellent choice as it helped us write more maintainable, professional-grade code while reducing the potential for bugs in the training infrastructure.
 
 ## Coding environment
 
@@ -162,7 +166,19 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 4 fill here ---
+We used pip and pyproject.toml for managing our dependencies. The list of dependencies was auto-generated using pip freeze. To get a complete copy of our development environment, one would have to run the following commands:
+pip install invoke
+invoke create-environment
+conda activate ehr_classification
+invoke requirements
+invoke dev-requirements
+
+This will set up the environment with all necessary packages including:
+
+Core ML libraries: PyTorch, PyTorch Lightning, torchmetrics
+Configuration management: hydra-core, omegaconf
+Development tools: pytest, ruff, mypy, pre-commit
+Documentation: mkdocs with material theme
 
 ### Question 5
 
@@ -178,7 +194,11 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 5 fill here ---
+From the cookiecutter template from MLops, we have filled out the repo_name, project_name, author_name, and description fields based on the specifics of our project. Additionally, we configured the python_version to match our project's requirements and selected the appropriate open-source license.
+
+In the resulting structure, we filled out the pyproject.toml file, where we defined the project metadata such as the project name (ehr_classification), version, description, authors, license, and keywords. We also specified the build system requirements and dependencies, linking to requirements.txt and requirements_dev.txt for standard and development dependencies, respectively.
+
+Furthermore, we made adjustments to include tools such as ruff for linting and coverage for test coverage analysis, configuring these in the pyproject.toml file. These modifications ensured the template aligned with our specific project needs and workflow
 
 ### Question 6
 
@@ -193,7 +213,10 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 6 fill here ---
+Yes, we implemented several measures to ensure code quality and maintainability. All files in the src/ehr_classification folder have type annotations, which make the code more predictable and easier to debug. Following PEP8 standards, we adhered to conventions such as using CapWords for class names and snake_case for methods and variables. Documentation was also a priority. At the beginning of each file, we included a brief description of its purpose, and every class and method has accompanying docstrings. For methods that are particularly complex or critical, we documented their inputs, outputs, simpler methods are described with concise summaries of their functionality.
+
+These practices are very important in larger projects because they keep the codebase clear, organized, and easier to work with. They help the whole team stay on the same page, making it simpler to collaborate and avoid mistakes. Clear typing, consistent formatting, and good documentation save time and reduce confusion, especially when bringing new team members on board. Plus, they make sure the code is easy to update and grow as the project develops.
+
 
 ## Version control
 
@@ -212,7 +235,18 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 7 fill here ---
+We implemented 35 tests across two main categories: data module and model-related tests.
+
+Dataloader Tests (7):
+Validate the DataLoader instance, batch size, shapes of ts_values, static, labels, lengths, and padding for shorter sequences.
+
+Dataset Tests (6):
+Ensure dataset length matches batch_size and verify shapes of (ts_values, static, labels, lengths).
+
+Model Tests (22):
+Core Model Tests (8): Check forward pass, optimizer configuration, and loss metrics.
+Submodule Tests (8): Validate StaticEncoder, StateTransition, and Classifier outputs and error handling.
+Edge Case Tests (6): Handle mismatched dimensions, missing class weights, and incorrect inputs.
 
 ### Question 8
 
@@ -227,7 +261,11 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 8 fill here ---
+Test Quality Matters: High coverage means most lines are executed, but it doesn't guarantee all edge cases or potential issues are tested.
+Unforeseen Scenarios: Real world data or other unknown conditions could lead to bugs not even tested in your tests.
+Complex Interactions: Parts of the system may behave differently when integrated, and tests might miss these issues.
+Environment Factors: Issues related to external systems or configurations may not show up in unit tests.
+In other words, while 94% coverage gives a great deal of confidence, it does not guarantee error-free code. Testing should be continuous and augmented with real-world validation.
 
 ### Question 9
 
@@ -242,7 +280,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 9 fill here ---
+Yes, our workflow included using branches and pull requests. Each team member worked on a specific task or topic in their own branch, and once a task was completed, the code was merged into the main branch through a pull request. This approach helped ensure that changes were introduced systematically and reviewed before being merged. By working on separate branches, we minimized the risk of conflicts and allowed for better version control management. After the initial days of development, direct modifications to the main branch were blocked, ensuring that all changes went through the proper review process via pull requests.
 
 ### Question 10
 
@@ -257,7 +295,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 10 fill here ---
+Yes, we used DVC in our project, though it doesn't bring many benefits for versioning control since our data doesn't change in the project. We mostly used it to challenge ourselves to get hands-on experience with DVC. However, it would be a very big help in projects that undergo constant updates of the data or in large datasets to track different versions. In such cases, DVC aids in managing changes in the data, reproducibility, and consistency between different versions of the dataset to make it easier to collaborate and handle large-scale data processing.
 
 ### Question 11
 
@@ -274,7 +312,15 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 11 fill here ---
+In our continuous integration setup, we focus on linting and testing to ensure code quality and correctness:
+
+Linting: We use Ruff version 0.9.1 for linting. Ruff is a fast Python linter that checks the code for style violations and potential errors, helping us work within PEP 8 standards and maintain clean, readable code.
+
+Testing is done using the pytest version of 7.4.3, which supports the writing and executing unit tests in the most efficient ways. It ensures detailed reports while checking that any component of code works as anticipated. We measure code coverage for our code base by using the coverage so we can identify how much of it is not appropriately tested.
+
+Multiple Operating Systems: Our CI pipeline is configured to test on multiple operating systems (e.g., Linux, macOS) to ensure cross-platform compatibility. This helps us identify platform-specific issues early in the development process.
+
+By integrating linting, testing, and cross-platform support, we ensure that our code is clean, well-tested, and works seamlessly across different environments.
 
 ## Running code and tracking experiments
 
@@ -293,7 +339,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 12 fill here ---
+For configuration management of train.yaml and evaluate.yaml files used for the operation of our experiment, we rely on Hydra for that purpose. YAML files hold information like the path and configuration settings that specify whether the experiment uses a train with a specific configuration for parameters: batch size and learning rate epochs. For example, in order to run the training experiment, we just have to mention a configuration file overriding the parameters through command-line that we need for a particular experiment, batch size, or data split. Using Hydra, several configurations of experiments can be maintained and run rather efficiently, applying all the different settings.
 
 ### Question 13
 
@@ -308,7 +354,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 13 fill here ---
+We used config files for reproducibility and to avoid losing information during experiments. Hydra does this by creating, at the time of running an experiment, a unique directory according to the timestamp and parameters of the experiment-split, batch size, etc.-containing logs, model checkpoints, and outputs. By doing so, all the details of a given experiment, like exact configuration, are stored in the run directory. To reproduce the experiment, a user would simply need to replicate the same configuration file and parameters in order for the environment and settings to exactly match, achieving reproducibility.
 
 ### Question 14
 
@@ -340,7 +386,9 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 15 fill here ---
+We applied Docker on the various activities, like training, evaluation, and inference tasks. It gives consistency and reproducibility of any given project with regard to a variety of different environments. It includes train.dockerfile, evaluate.dockerfile, infer.dockerfile where each one depends upon and configured its requirement; Dockerfiles automatically give a built-in option with environment discrepancy consideration while creating separate containers for different activities.
+
+TO run: docker build -t project_name -f train.dockerfile . This ensures that the required directories (data, models, configs) are mounted correctly into the container, and the task runs as expected.
 
 ### Question 16
 
@@ -355,7 +403,14 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 16 fill here ---
+When debugging issues during our experiments, we followed a systematic approach. We utilized version control through GitHub, which allowed us to track code changes and easily identify bugs caused by recent updates. Each team member had write access to ensure collaboration.
+
+Our debugging steps included:
+
+Isolating the issue: Running smaller components of the code (e.g., data processing, model training) to pinpoint where the bug originated.
+Logging: We implemented logging to track key events, such as model initialization and error messages, helping us identify issues quickly.
+Unit Tests: Writing tests for the data and model code ensured early detection of problems.
+Although we didn’t profile the code, these strategies allowed us to efficiently identify and resolve issues, ensuring smooth experiment execution.
 
 ## Working in the cloud
 
@@ -372,7 +427,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 17 fill here ---
+Google Cloud Storage (GCS): For storing and managing datasets and model files securely.
 
 ### Question 18
 
