@@ -88,6 +88,7 @@ The directory structure of the project looks like this:
 pip install invoke
 invoke create-environment
 conda activate ehr_classification
+pip install invoke
 invoke requirements
 invoke dev-requirements
 ```
@@ -103,3 +104,27 @@ invoke dev-requirements
 Created using [mlops_template](https://github.com/SkafteNicki/mlops_template),
 a [cookiecutter template](https://github.com/cookiecutter/cookiecutter) for getting
 started with Machine Learning Operations (MLOps).
+
+# DVC setup
+All:
+```
+pip install dvc-gs
+```
+
+On linux:
+```
+sudo apt update && sudo apt upgrade -y
+echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+sudo apt update
+sudo apt install google-cloud-sdk -y
+
+```
+All:
+```
+gcloud init
+gcloud auth login
+gcloud auth application-default login
+gcloud config set project dtumlops-447914
+dvc pull
+```
