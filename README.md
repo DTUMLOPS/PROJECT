@@ -44,6 +44,10 @@ A refactor of a previously implemented EHR for MLOps course @ DTU
 
 ## Project structure
 
+Created using [mlops_template](https://github.com/SkafteNicki/mlops_template),
+a [cookiecutter template](https://github.com/cookiecutter/cookiecutter) for getting
+started with Machine Learning Operations (MLOps).
+
 The directory structure of the project looks like this:
 ```txt
 ├── .github/                  # Github actions and dependabot
@@ -61,12 +65,6 @@ The directory structure of the project looks like this:
 ├── data/                     # Data directory
 │   └── processed
 │       └── .gitkeep
-├── dockerfiles/              # Dockerfiles
-│   ├── api.dockerfile
-│   ├── evaluate.dockerfile
-│   ├── infer.dockerfile
-│   ├── train.dockerfile
-│   └── README.md
 ├── models/                   # Trained models
 │   └── .gitkeep
 ├── reports/                  # Reports
@@ -81,8 +79,7 @@ The directory structure of the project looks like this:
 │   │   ├── evaluate.py
 │   │   ├── inference.py
 │   │   ├── model.py
-│   │   ├── train.py
-│   │   └── visualize.py
+│   │   └── train.py
 ├── tests/                    # Tests
 │   ├── __init__.py
 │   ├── test_api.py
@@ -90,6 +87,10 @@ The directory structure of the project looks like this:
 │   └── test_model.py
 ├── .gitignore
 ├── .pre-commit-config.yaml
+├── cloudbuild.yaml           # Google Cloud Build configuration
+├── Dockerfile                # Dockerfile for building the API server
+├── docker-compose.yml        # Docker Compose configuration
+├── data.dvc                  # DVC data file
 ├── LICENSE
 ├── pyproject.toml            # Python project file
 ├── README.md                 # Project README
@@ -100,25 +101,20 @@ The directory structure of the project looks like this:
 
 ## Setup environment and install requirements
 ```
+# Initial setup
 pip install invoke
+
+# Project setup
 invoke create-environment
 conda activate ehr_classification
-pip install invoke
-invoke requirements
-invoke dev-requirements
+invoke dev-requirements  # This includes requirements as a dependency
 ```
 
 ## If requirements.txt changes
 ```
-# Just run invoke requirements again
-invoke requirements
+# Just run invoke dev-requirements again
 invoke dev-requirements
 ```
-
-
-Created using [mlops_template](https://github.com/SkafteNicki/mlops_template),
-a [cookiecutter template](https://github.com/cookiecutter/cookiecutter) for getting
-started with Machine Learning Operations (MLOps).
 
 # DVC setup
 All:
@@ -142,4 +138,47 @@ gcloud auth login
 gcloud auth application-default login
 gcloud config set project dtumlops-447914
 dvc pull
+```
+
+# Docker Setup
+
+This project provides several Docker containers for training, evaluation, inference, and API serving of the EHR classification model.
+
+## Prerequisites
+
+- Docker installed on your machine
+- Docker Compose installed on your machine
+- At least 8GB of RAM recommended
+- WandB account
+
+## Running Services with Docker Compose
+
+Set your WandB API key:
+```bash
+export WANDB_API_KEY=your_key_from_wandb.ai/settings
+```
+
+# Docker Commands
+
+Build:
+```bash
+docker compose build
+```
+
+Run:
+```bash
+docker compose up api            # API server
+docker compose run --rm train    # Training
+docker compose run --rm evaluate # Evaluation
+docker compose run --rm infer    # Inference
+```
+
+# Invoke Tasks
+```bash
+invoke docker-build    # Build images
+invoke docker-train    # Training
+invoke docker-evaluate # Evaluation
+invoke docker-infer    # Inference
+invoke docker-api      # API server
+invoke docker-down     # Stop containers
 ```

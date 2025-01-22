@@ -262,10 +262,7 @@ def main(cfg: DictConfig) -> None:
     logger.info("\nConfiguration:")
     logger.info(OmegaConf.to_yaml(cfg))
 
-    # Initialize wandb
     wandb.init(project="dtumlops", entity="alexcomas", job_type="inference")
-
-    # Login to wandb
     wandb.login(key=get_wandb_token())
 
     # Use the artifact API to download the file

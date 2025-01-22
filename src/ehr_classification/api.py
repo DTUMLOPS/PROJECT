@@ -44,10 +44,8 @@ def get_wandb_token() -> str:
 async def lifespan(app: FastAPI):
     global engine
     try:
-        # Initialize wandb
         wandb.login(key=get_wandb_token())
 
-        # Initialize wandb run
         wandb.init(
             project="dtumlops",
             entity="alexcomas",
@@ -59,7 +57,6 @@ async def lifespan(app: FastAPI):
         artifact_dir = artifact.download()
         model_path = Path(artifact_dir) / "model.ckpt"
 
-        # Initialize inference engine
         engine = InferenceEngine(use_gpu=False)
         engine.load_model(str(model_path))
 
@@ -71,7 +68,6 @@ async def lifespan(app: FastAPI):
     # Cleanup
     if engine:
         engine.model_manager.unload_model()
-    # Finish wandb run
     wandb.finish()
 
 
@@ -80,18 +76,29 @@ app = FastAPI(title="EHR Classification API", lifespan=lifespan)
 
 @app.get("/predict")
 async def predict():
+    """
+    Endpoint to generate predictions using the loaded model.
+
+    This endpoint generates random display data, performs inference using the
+    loaded model, and returns the prediction results.
+
+    Returns:
+        PredictionOutput: A Pydantic model containing the prediction results,
+        including probabilities, predicted classes, and interpretation.
+
+    Raises:
+        HTTPException: If the model is not loaded or if an error occurs during
+        prediction.
+    """
     if engine is None:
         raise HTTPException(status_code=503, detail="Model not loaded")
 
     try:
-        # Generate display data
+        # Generate random display data
         temporal_data = np.random.rand(10, 37)  # [sequence_length, num_features]
         static_data = np.random.rand(8)  # [num_static_features]
-
-        # Make prediction
         results = engine.predict(temporal_data, static_data)
 
-        # Convert numpy arrays to lists for JSON serialization
         return PredictionOutput(
             probabilities=results.probabilities.tolist(),
             predicted_classes=results.predicted_classes.tolist(),
