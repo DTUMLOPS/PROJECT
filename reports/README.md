@@ -468,7 +468,8 @@ e2-medium (2 vCPU, 1 core, 4 GB memory). It worked, but due to the low specs of 
 >
 > Answer:
 
---- question 20 fill here ---
+![this figure](figures/artifact.png)
+![this figure](figures/artifact_2.png)
 
 ### Question 21
 
@@ -477,7 +478,8 @@ e2-medium (2 vCPU, 1 core, 4 GB memory). It worked, but due to the low specs of 
 >
 > Answer:
 
---- question 21 fill here ---
+![this figure](figures/build.png)
+![this figure](figures/build_2.png)
 
 ### Question 22
 
@@ -547,8 +549,7 @@ FastAPI makes the API easy to use, and it generates automatic documentation for 
 >
 > Answer:
 
---- question 25 fill here ---
-
+For unit testing, we used pytest to ensure the API's core components were reliable and worked as expected. We tested the model’s forward pass to confirm that outputs had the correct shape and handled edge cases, like mismatched input sizes, without crashing. This helped verify the model’s ability to process both static and temporal data effectively. We also focused on the data loading pipeline, testing the PhysionetDataset and PhysionetDataModule to ensure batches were created correctly, shorter sequences were padded properly, and sequence lengths were accurate. These tests ensured data integrity throughout the training and evaluation processes. Additionally, we validated submodules like encoders and classifiers to confirm they handled edge cases, such as empty inputs or unexpected input sizes. This thorough testing helped us catch potential issues early, ensuring the API is robust and performs well in real-world scenarios.
 ### Question 26
 
 > **Did you manage to implement monitoring of your deployed model? If yes, explain how it works. If not, explain how**
@@ -581,7 +582,10 @@ FastAPI makes the API easy to use, and it generates automatic documentation for 
 >
 > Answer:
 
---- question 27 fill here ---
+The most expensive part of the project was the use of the compute engine (for training), this ended up costing us 5.97 dollars. Luckily this cost was covered by DTU. The rest of the costs were negligible, coming out at a total of around 6.50 USD. See the figure below:
+
+![this figure](figures/cost.png)
+
 
 ### Question 28
 
@@ -597,7 +601,7 @@ FastAPI makes the API easy to use, and it generates automatic documentation for 
 >
 > Answer:
 
---- question 28 fill here ---
+No, we ran into many technical issues while making sure that the code ran on all of our machines. One of the team members had an old macbook that really caused many problems, so in the end we didn't have time to add extra components. However it was a very instructive learning experience, to figure out what we would do if this was to happen in a real life scenario.
 
 ### Question 29
 
@@ -613,8 +617,6 @@ FastAPI makes the API easy to use, and it generates automatic documentation for 
 > *Whenever we commit code and push to GitHub, it auto triggers ... and ... . From there the diagram shows ...*
 >
 > Answer:
-
---- question 29 fill here ---
 
 ### Question 30
 
