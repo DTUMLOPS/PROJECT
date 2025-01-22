@@ -94,3 +94,9 @@ def docker_evaluate(ctx: Context) -> None:
 def docker_infer(ctx: Context) -> None:
     """Run inference in Docker container."""
     ctx.run("docker run --rm infer_ehr:latest", echo=True, pty=not WINDOWS)
+
+
+@task
+def format_code(ctx: Context) -> None:
+    ctx.run("ruff format . --check", echo=True, pty=not WINDOWS)
+    ctx.run("ruff check .", echo=True, pty=not WINDOWS)
