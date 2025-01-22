@@ -85,7 +85,6 @@ training:
   use_gpu: false
 
 evaluation:
-  checkpoint_path: null  # Set to null to use mode-based selection
   mode: random           # Options: 'random', 'best', 'last'
 ```
 
@@ -154,6 +153,5 @@ python src/ehr_classification/evaluate.py data.split_number=2
 - `use_gpu`: Whether to use GPU acceleration
 
 ### Evaluation Parameters
-- `checkpoint_path`: Path to specific model checkpoint
 - `mode`: Checkpoint selection mode ('random', 'best', 'last')
 - `split_number`: Which data split to evaluate

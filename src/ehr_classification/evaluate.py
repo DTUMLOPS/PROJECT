@@ -10,9 +10,11 @@ from pathlib import Path
 import hydra
 from omegaconf import DictConfig, OmegaConf
 import pytorch_lightning as pl
+import wandb
 
 from ehr_classification.data import PhysionetDataModule
 from ehr_classification.model import DSSMLightning
+from ehr_classification.utils.secret_manager import get_wandb_token
 
 logger = logging.getLogger(__name__)
 
@@ -65,22 +67,18 @@ def evaluate(cfg: DictConfig) -> None:
     logger.info("-" * 40)
     logger.info(OmegaConf.to_yaml(cfg))
 
-    # Determine checkpoint path
-    try:
-        if cfg.evaluation.checkpoint_path and "${paths.output_dir}" not in cfg.evaluation.checkpoint_path:
-            # Use explicitly provided checkpoint
-            checkpoint_path = cfg.evaluation.checkpoint_path
-            logger.info(f"\nUsing provided checkpoint: {checkpoint_path}")
-        else:
-            # Select checkpoint based on mode
-            checkpoint_path = find_checkpoint(
-                Path(cfg.paths.model_dir),
-                cfg.data.split_number,
-                mode=cfg.evaluation.get("mode", "random"),  # Default to random if not specified
-            )
-    except ValueError as e:
-        logger.error(f"Error finding checkpoint: {e}")
-        return
+    # Initialize wandb
+    wandb.init(project="dtumlops", entity="alexcomas", job_type="evaluation")
+
+    # Login to wandb
+    wandb.login(key=get_wandb_token())
+
+    # Use the artifact API to download the file
+    artifact = wandb.use_artifact("ehr_classification:latest", type="model")
+    artifact_dir = artifact.download()
+
+    # Load the model checkpoint
+    model_path = f"{artifact_dir}/model.ckpt"
 
     # Create data module and load model
     try:
@@ -88,7 +86,7 @@ def evaluate(cfg: DictConfig) -> None:
             data_dir=cfg.data.base_dir, split_number=cfg.data.split_number, batch_size=cfg.training.batch_size
         )
 
-        model = DSSMLightning.load_from_checkpoint(checkpoint_path)
+        model = DSSMLightning.load_from_checkpoint(model_path)
         logger.info("Model loaded successfully")
 
     except Exception as e:
