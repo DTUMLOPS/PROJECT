@@ -1,5 +1,6 @@
 # ehr_classification
 
+# Deployed model - https://api-ehr-525142839639.europe-north1.run.app/predict
 
 ## Overall Goal of the Project
 
