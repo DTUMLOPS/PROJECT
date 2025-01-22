@@ -1,8 +1,9 @@
 docs/site/
 
-# Don't include uzipped data files in the repo
+# Don't include zipped and uzipped data files in the repo
 placeholder/
 split_*/
+P12Data*
 
 # Ignore hydfra files (stored in outputs and results)
 result
@@ -178,11 +179,3 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
-
-# PyCharm
-#  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
-#  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
-#  and can be added to the global gitignore or merged into this file.  For a more nuclear
-#  option (not recommended) you can uncomment the following to ignore the entire idea folder.
-#.idea/
-/data
