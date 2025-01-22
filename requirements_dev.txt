@@ -2,7 +2,7 @@
 invoke==2.2.0
 
 # pre-commit
-pre-commit==3.5.0
+pre-commit>=3.5.0
 
 # testing
 pytest==7.4.3
@@ -22,3 +22,5 @@ dvc-gs==3.0.1
 # gcloud
 google-api-python-client==2.159.0
 
+# type checking
+mypy>=1.8.0

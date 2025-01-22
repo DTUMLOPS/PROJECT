@@ -1,6 +1,7 @@
 """
 Evaluation script for the DSSM model.
 """
+
 import random
 import logging
 from pathlib import Path
@@ -15,7 +16,7 @@ from ehr_classification.model import DSSMLightning
 logger = logging.getLogger(__name__)
 
 
-def find_checkpoint(model_dir: Path, split_number: int, mode: str = 'random') -> str:
+def find_checkpoint(model_dir: Path, split_number: int, mode: str = "random") -> str:
     """Find a checkpoint for evaluation.
 
     Args:
@@ -34,20 +35,14 @@ def find_checkpoint(model_dir: Path, split_number: int, mode: str = 'random') ->
     if not checkpoints:
         raise ValueError(f"No checkpoints found in {split_dir}")
 
-    if mode == 'random':
+    if mode == "random":
         selected_checkpoint = random.choice(checkpoints)
         logger.info(f"Randomly selected checkpoint: {selected_checkpoint}")
-    elif mode == 'best':
-        selected_checkpoint = min(
-            checkpoints,
-            key=lambda x: float(str(x).split("val_loss=")[-1].replace(".ckpt", ""))
-        )
+    elif mode == "best":
+        selected_checkpoint = min(checkpoints, key=lambda x: float(str(x).split("val_loss=")[-1].replace(".ckpt", "")))
         logger.info(f"Selected best checkpoint (lowest val_loss): {selected_checkpoint}")
-    elif mode == 'last':
-        selected_checkpoint = max(
-            checkpoints,
-            key=lambda x: int(str(x).split("epoch=")[1].split("-")[0])
-        )
+    elif mode == "last":
+        selected_checkpoint = max(checkpoints, key=lambda x: int(str(x).split("epoch=")[1].split("-")[0]))
         logger.info(f"Selected last checkpoint: {selected_checkpoint}")
     else:
         raise ValueError(f"Invalid mode: {mode}. Must be 'random', 'best', or 'last'")
@@ -75,7 +70,7 @@ def evaluate(cfg: DictConfig) -> None:
             checkpoint_path = find_checkpoint(
                 Path(cfg.paths.model_dir),
                 cfg.data.split_number,
-                mode=cfg.evaluation.get('mode', 'random')  # Default to random if not specified
+                mode=cfg.evaluation.get("mode", "random"),  # Default to random if not specified
             )
     except ValueError as e:
         logger.error(f"Error finding checkpoint: {e}")
@@ -84,9 +79,7 @@ def evaluate(cfg: DictConfig) -> None:
     # Create data module and load model
     try:
         datamodule = PhysionetDataModule(
-            data_dir=cfg.data.base_dir,
-            split_number=cfg.data.split_number,
-            batch_size=cfg.training.batch_size
+            data_dir=cfg.data.base_dir, split_number=cfg.data.split_number, batch_size=cfg.training.batch_size
         )
 
         model = DSSMLightning.load_from_checkpoint(checkpoint_path)
@@ -96,11 +89,7 @@ def evaluate(cfg: DictConfig) -> None:
         logger.error(f"Error setting up evaluation: {e}")
         return
 
-    trainer = pl.Trainer(
-        accelerator='gpu' if cfg.training.use_gpu else 'cpu',
-        devices=1,
-        deterministic=True
-    )
+    trainer = pl.Trainer(accelerator="gpu" if cfg.training.use_gpu else "cpu", devices=1, deterministic=True)
 
     try:
         results = trainer.test(model, datamodule=datamodule)

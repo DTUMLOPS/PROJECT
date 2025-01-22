@@ -1,7 +1,13 @@
 import pytest
 import torch
 import torch.nn as nn
-from ehr_classification.model import DSSMLightning, TemporalEncoder, StaticEncoder, StateTransition, Classifier  # Adjust the import path as needed
+from ehr_classification.model import (
+    DSSMLightning,
+    StaticEncoder,
+    StateTransition,
+    Classifier,
+)  # Adjust the import path as needed
+
 
 @pytest.fixture
 def model_params():
@@ -17,6 +23,7 @@ def model_params():
         "learning_rate": 0.001,
     }
 
+
 @pytest.fixture
 def data(model_params):
     """Fixture to create sample input data for testing."""
@@ -28,10 +35,12 @@ def data(model_params):
     labels = torch.randint(0, model_params["num_classes"], (batch_size,))  # Random labels
     return temporal_data, static_data, seq_lengths, labels
 
+
 @pytest.fixture
 def model(model_params):
     """Fixture to create the DSSM model instance."""
     return DSSMLightning(**model_params)
+
 
 def test_forward_pass(model, data):
     """
@@ -42,6 +51,7 @@ def test_forward_pass(model, data):
     outputs = model(temporal_data, static_data, seq_lengths)
     assert outputs.shape == (temporal_data.size(0), model.hparams.num_classes)
 
+
 def test_configure_optimizers(model):
     """
     Test the optimizer configuration of the DSSM model.
@@ -49,6 +59,7 @@ def test_configure_optimizers(model):
     """
     optimizer = model.configure_optimizers()
     assert isinstance(optimizer, torch.optim.Adam)
+
 
 # def test_temporal_encoder(model_params, data):
 #     """
@@ -66,6 +77,7 @@ def test_configure_optimizers(model):
 #     output = encoder(temporal_data, seq_lengths)
 #     assert output.shape == (temporal_data.size(0), temporal_data.size(1), model_params["hidden_size"] * (2 if model_params["bidirectional"] else 1))
 
+
 def test_static_encoder(model_params, data):
     """
     Test the StaticEncoder submodule.
@@ -80,6 +92,7 @@ def test_static_encoder(model_params, data):
     output = encoder(static_data)
     assert output.shape == (static_data.size(0), model_params["hidden_size"])
 
+
 def test_state_transition(model_params, data):
     """
     Test the StateTransition submodule.
@@ -92,6 +105,7 @@ def test_state_transition(model_params, data):
     input_data = torch.rand(data[0].size(0), model_params["hidden_size"])
     output = state_transition(input_data)
     assert output.shape == (input_data.size(0), model_params["hidden_size"])
+
 
 def test_classifier(model_params, data):
     """
@@ -108,6 +122,7 @@ def test_classifier(model_params, data):
     output = classifier(input_data)
     assert output.shape == (input_data.size(0), model_params["num_classes"])
 
+
 def test_training_step(model, data):
     """
     Test the training step of the DSSM model.
@@ -118,6 +133,7 @@ def test_training_step(model, data):
     loss = model.training_step(batch, batch_idx=0)
     assert isinstance(loss, torch.Tensor)
 
+
 def test_validation_step(model, data):
     """
     Test the validation step of the DSSM model.
@@ -127,6 +143,7 @@ def test_validation_step(model, data):
     batch = (temporal_data, static_data, labels, seq_lengths)
     loss = model.validation_step(batch, batch_idx=0)
     assert isinstance(loss, torch.Tensor)
+
 
 def test_test_step(model, data):
     """
@@ -140,6 +157,7 @@ def test_test_step(model, data):
     assert "test_acc" in result
     assert "test_auroc" in result
     assert "test_auprc" in result
+
 
 # def test_temporal_encoder_with_zero_length_sequences(model_params):
 #     """
@@ -159,6 +177,7 @@ def test_test_step(model, data):
 #     output = encoder(temporal_data, seq_lengths)
 #     assert output.shape == (batch_size, seq_len, model_params["hidden_size"] * (2 if model_params["bidirectional"] else 1))
 
+
 def test_static_encoder_with_large_inputs(model_params):
     """
     Test the StaticEncoder with larger-than-expected inputs to check for robustness.
@@ -172,6 +191,7 @@ def test_static_encoder_with_large_inputs(model_params):
     large_static_data = torch.rand(batch_size, model_params["static_input_size"] * 2)  # Larger input size
     with pytest.raises(RuntimeError):
         encoder(large_static_data)
+
 
 def test_classifier_with_incorrect_input_size(model_params):
     """
@@ -187,6 +207,7 @@ def test_classifier_with_incorrect_input_size(model_params):
     with pytest.raises(RuntimeError):
         classifier(incorrect_input_data)
 
+
 def test_state_transition_with_empty_input(model_params):
     """
     Test the StateTransition module with an empty tensor to check for robustness.
@@ -199,14 +220,18 @@ def test_state_transition_with_empty_input(model_params):
     output = state_transition(empty_input)
     assert output.shape == (0, model_params["hidden_size"])
 
+
 def test_forward_pass_with_mismatched_static_and_temporal_data(model, data):
     """
     Test the forward pass with mismatched temporal and static data dimensions to check for graceful failure.
     """
     temporal_data, _, seq_lengths, _ = data
-    mismatched_static_data = torch.rand(temporal_data.size(0) + 1, model.hparams.static_input_size)  # Mismatched batch size
+    mismatched_static_data = torch.rand(
+        temporal_data.size(0) + 1, model.hparams.static_input_size
+    )  # Mismatched batch size
     with pytest.raises(RuntimeError):
         model(temporal_data, mismatched_static_data, seq_lengths)
+
 
 def test_loss_function_with_missing_class_weights(model_params):
     """
@@ -217,6 +242,7 @@ def test_loss_function_with_missing_class_weights(model_params):
     criterion = model.criterion
     assert isinstance(criterion, nn.CrossEntropyLoss)
     assert criterion.weight is None
+
 
 # def test_training_step_with_empty_batch(model):
 #     """
