@@ -23,5 +23,4 @@ training:
   use_gpu: false
 
 evaluation:
-  checkpoint_path: null  # Set to null to use mode-based selection
   mode: random  # Options: 'random', 'best', 'last'
