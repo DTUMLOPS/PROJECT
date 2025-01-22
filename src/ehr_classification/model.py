@@ -326,13 +326,14 @@ class Classifier(nn.Module):
         """
         return self.network(x)
 
+
 # Save the model as an artifact at the end of training
 class SaveModelAsArtifact(pl.LightningModule):
     def on_train_end(self):
         # Save the checkpoint
         artifact_path = self.trainer.checkpoint_callback.best_model_path
         wandb.save(artifact_path)
-        
+
         # Log the artifact to W&B
         artifact = wandb.Artifact(
             name="ehr_classification",

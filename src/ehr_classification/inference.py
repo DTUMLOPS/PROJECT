@@ -4,7 +4,6 @@ This file includes utilities for loading models, validating input data, and perf
 """
 
 import logging
-from pathlib import Path
 from typing import Dict, Optional, Union, List
 from dataclasses import dataclass
 
@@ -15,7 +14,6 @@ from omegaconf import DictConfig, OmegaConf
 import wandb
 
 from ehr_classification.model import DSSMLightning
-from ehr_classification.evaluate import find_checkpoint
 from ehr_classification.utils.secret_manager import get_wandb_token
 
 logger = logging.getLogger(__name__)
@@ -271,7 +269,7 @@ def main(cfg: DictConfig) -> None:
     wandb.login(key=get_wandb_token())
 
     # Use the artifact API to download the file
-    artifact = wandb.use_artifact('ehr_classification:latest', type='model')
+    artifact = wandb.use_artifact("ehr_classification:latest", type="model")
     artifact_dir = artifact.download()
 
     # Load the model checkpoint

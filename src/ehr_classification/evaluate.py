@@ -74,7 +74,7 @@ def evaluate(cfg: DictConfig) -> None:
     wandb.login(key=get_wandb_token())
 
     # Use the artifact API to download the file
-    artifact = wandb.use_artifact('ehr_classification:latest', type='model')
+    artifact = wandb.use_artifact("ehr_classification:latest", type="model")
     artifact_dir = artifact.download()
 
     # Load the model checkpoint

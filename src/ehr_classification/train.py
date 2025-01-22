@@ -10,7 +10,6 @@ import hydra
 from omegaconf import DictConfig, OmegaConf
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
-import torch
 import wandb
 
 from pytorch_lightning.loggers import WandbLogger
@@ -136,7 +135,9 @@ def train(cfg: DictConfig) -> None:
     wandb.login(key=get_wandb_token())
 
     # initialise the wandb logger and name your wandb project
-    wandb_logger = WandbLogger(project='dtumlops', checkpoint_name="ehr_classification", log_model=True, job_type="training")
+    wandb_logger = WandbLogger(
+        project="dtumlops", checkpoint_name="ehr_classification", log_model=True, job_type="training"
+    )
 
     # add your batch size to the wandb config
     wandb_logger.experiment.config["batch_size"] = cfg.training.batch_size
