@@ -17,6 +17,7 @@ from pytorch_lightning.loggers import WandbLogger
 
 from ehr_classification.data import PhysionetDataModule
 from ehr_classification.model import DSSMLightning, SaveModelAsArtifact
+from ehr_classification.utils.secret_manager import get_wandb_token
 
 logger = logging.getLogger(__name__)
 
@@ -132,7 +133,7 @@ def train(cfg: DictConfig) -> None:
     """
     logger.info("Starting cross-validation training...")
     logger.info(f"Using config:\n{OmegaConf.to_yaml(cfg)}")
-    wandb.login(key="862cb3811297e61bdd4495300bb45c4a321e6004")
+    wandb.login(key=get_wandb_token())
 
     # initialise the wandb logger and name your wandb project
     wandb_logger = WandbLogger(project='dtumlops', checkpoint_name="ehr_classification", log_model=True, job_type="training")
