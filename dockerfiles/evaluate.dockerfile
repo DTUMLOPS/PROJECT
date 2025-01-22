@@ -18,6 +18,7 @@ COPY pyproject.toml ./
 COPY src/ src/
 COPY configs/ configs/
 COPY data/ data/
+COPY models/ models/
 
 # Install the package
 RUN pip install . --no-deps --no-cache-dir
@@ -27,4 +28,4 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
 # Command to run training
-ENTRYPOINT ["python", "-u", "src/ehr_classification/train.py"]
+ENTRYPOINT ["python", "-u", "src/ehr_classification/evaluate.py"]
