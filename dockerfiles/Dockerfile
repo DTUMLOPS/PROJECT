@@ -29,8 +29,9 @@ RUN pip install . --no-deps --no-cache-dir
 
 # API stage
 FROM base AS api
+COPY models/ models/
 EXPOSE 8000
-ENTRYPOINT ["uvicorn", "src/ehr_classification/api:app", "--host", "0.0.0.0", "--port", "8000"]
+ENTRYPOINT ["uvicorn", "ehr_classification.api:app", "--host", "0.0.0.0", "--port", "8000"]
 
 # Training stage
 FROM base AS train
