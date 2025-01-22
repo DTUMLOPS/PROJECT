@@ -12,6 +12,7 @@ services:
     environment:
       - MODEL_PATH=/models
       - PYTHONUNBUFFERED=1
+      - WANDB_API_KEY=${WANDB_API_KEY}
 
   train:
     build:

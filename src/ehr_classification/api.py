@@ -6,19 +6,18 @@ enabling remote operation.
 
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import List
+import logging
+from typing import List, Optional
 
 import numpy as np
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+import wandb
 
-from ehr_classification.evaluate import find_checkpoint
 from ehr_classification.inference import InferenceEngine
+from ehr_classification.utils.secret_manager import get_wandb_token
 
-
-class PredictionInput(BaseModel):
-    temporal_data: List[List[float]]
-    static_data: List[float]
+logger = logging.getLogger(__name__)
 
 
 class PredictionOutput(BaseModel):
@@ -28,29 +27,33 @@ class PredictionOutput(BaseModel):
 
 
 # Global inference engine
-engine = None
+engine: Optional[InferenceEngine] = None
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global engine
     try:
+        # Initialize wandb
+        wandb.login(key=get_wandb_token())
+
+        # Use the artifact API to download the latest model
+        artifact = wandb.use_artifact("ehr_classification:latest", type="model")
+        artifact_dir = artifact.download()
+        model_path = Path(artifact_dir) / "model.ckpt"
+
         # Initialize inference engine
         engine = InferenceEngine(use_gpu=False)
+        engine.load_model(str(model_path))
 
-        # Find best checkpoint
-        checkpoint_path = find_checkpoint(
-            Path("models"),
-            split_number=1,  # Use first split by default
-            mode="best",
-        )
-
-        # Load model
-        engine.load_model(checkpoint_path)
+        logger.info(f"Model loaded successfully from {model_path}")
     except Exception as e:
-        print(f"Error during startup: {e}")
+        logger.error(f"Error during startup: {e}")
         raise
     yield
+    # Cleanup
+    if engine:
+        engine.model_manager.unload_model()
 
 
 app = FastAPI(title="EHR Classification API", lifespan=lifespan)
@@ -62,9 +65,10 @@ async def predict():
         raise HTTPException(status_code=503, detail="Model not loaded")
 
     try:
-        # Convert input data to numpy arrays
+        # Generate display data
         temporal_data = np.random.rand(10, 37)  # [sequence_length, num_features]
-        static_data = np.random.rand(8)
+        static_data = np.random.rand(8)  # [num_static_features]
+
         # Make prediction
         results = engine.predict(temporal_data, static_data)
 
@@ -75,4 +79,13 @@ async def predict():
             interpretation=results.get_interpretation(),
         )
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        logger.error(f"Prediction error: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error during prediction")
+
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint to verify API and model status."""
+    if engine is None:
+        raise HTTPException(status_code=503, detail="Model not loaded")
+    return {"status": "healthy", "model_loaded": True}
