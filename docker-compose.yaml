@@ -5,7 +5,7 @@ services:
       dockerfile: ./dockerfiles/Dockerfile
       target: api
     ports:
-      - "8000:8000"
+      - "8080:8080"
     volumes:
       - ./models:/models
       - ./src:/src  # For hot reload
