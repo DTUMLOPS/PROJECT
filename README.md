@@ -48,6 +48,7 @@ The directory structure of the project looks like this:
 pip install invoke
 invoke create-environment
 conda activate ehr_classification
+pip install invoke
 invoke requirements
 invoke dev-requirements
 ```
