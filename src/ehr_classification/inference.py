@@ -18,7 +18,6 @@ from ehr_classification.evaluate import find_checkpoint
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class InferenceInput:
     """
@@ -125,7 +124,6 @@ class InferenceOutput:
             "predicted_classes": self.predicted_classes.tolist(),
             "interpretation": self.get_interpretation(),
         }
-
 
 class ModelManager:
     """
@@ -265,7 +263,7 @@ def main(cfg: DictConfig) -> None:
     # Find checkpoint path
     if cfg.evaluation.checkpoint_path:
         checkpoint_path = cfg.evaluation.checkpoint_path
-    else:
+    else: 
         checkpoint_path = find_checkpoint(
             Path(cfg.paths.model_dir),
             cfg.data.split_number,
