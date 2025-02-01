@@ -1,5 +1,5 @@
 # ML Libraries
-torch~=2.2.2
+torch~=2.6.0
 numpy<2
 pytorch-lightning~=2.5.0.post0
 torchmetrics~=1.6.1
