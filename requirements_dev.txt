@@ -20,7 +20,7 @@ mkdocstrings-python==1.12.2
 dvc-gs==3.0.1
 
 # gcloud
-google-api-python-client==2.159.0
+google-api-python-client==2.160.0
 
 # type checking
 mypy>=1.8.0
